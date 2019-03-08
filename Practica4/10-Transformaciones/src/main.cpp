@@ -28,14 +28,14 @@ struct Vertex {
 // This is for the render with index element
 Vertex vertices[] =
 {
-	{ glm::vec3(-0.5f, -0.5f, 0.5f) , glm::vec3(1.0f, 0.0f, 0.0f) },
-	{ glm::vec3(0.5f , -0.5f, 0.5f) , glm::vec3(0.0f, 1.0f, 0.0f) },
-	{ glm::vec3(0.5f ,  0.5f, 0.5f) , glm::vec3(0.0f, 0.0f, 1.0f) },
-	{ glm::vec3(-0.5f,  0.5f, 0.5f) , glm::vec3(1.0f, 0.0f, 1.0f) },
-	{ glm::vec3(0.5f , -0.5f, -0.5f), glm::vec3(1.0f, 0.0f, 0.0f) },
-	{ glm::vec3(0.5f ,  0.5f, -0.5f), glm::vec3(1.0f, 0.0f, 1.0f) },
-	{ glm::vec3(-0.5f , 0.5f, -0.5f) ,glm::vec3(0.0f, 0.0f, 1.0f) },
-	{ glm::vec3(-0.5f , -0.5f, -0.5f),glm::vec3(0.0f, 1.0f, 0.0f) },
+	{ glm::vec3(-0.5f, -0.5f, 0.5f) ,	glm::vec3(1.0f, 0.0f, 1.0f) },
+	{ glm::vec3(0.5f , -0.5f, 0.5f) ,	glm::vec3(1.0f, 0.0f, 1.0f) },
+	{ glm::vec3(0.5f ,  0.5f, 0.5f) ,	glm::vec3(1.0f, 1.0f, 1.0f) },
+	{ glm::vec3(-0.5f,  0.5f, 0.5f) ,	glm::vec3(1.0f, 1.0f, 1.0f) },
+	{ glm::vec3(0.5f , -0.5f, -0.5f),	glm::vec3(1.0f, 0.0f, 1.0f) },
+	{ glm::vec3(0.5f ,  0.5f, -0.5f),	glm::vec3(1.0f, 0.0f, 1.0f) },
+	{ glm::vec3(-0.5f , 0.5f, -0.5f) ,	glm::vec3(1.0f, 1.0f, 0.0f) },
+	{ glm::vec3(-0.5f , -0.5f, -0.5f),	glm::vec3(1.0f, 1.0f, 0.0f) }, //Amarillo
 };
 
 GLuint indices[] = {  // Note that we start from 0!
@@ -125,7 +125,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	}
 
 	glViewport(0, 0, screenWidth, screenHeight);
-	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+	glClearColor(0.0f, 0.0f, 4.0f, 0.0f);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -246,7 +246,8 @@ void applicationLoop() {
 		psi = processInput(true);
 		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		//Color del fondo de la ventana 
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); 
 
 		shader.turnOn();
 
@@ -263,18 +264,22 @@ void applicationLoop() {
 		glBindVertexArray(VAO);
 
 		//De la cosecha
+
+		float scale = 1.0f;
+
 		for (int i = 0; i < 10; i++)
 		{
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), cubePositions[i]);
-
-
+			model = glm::rotate(model, (float)i / 3.1416f, glm::vec3(1.0f, 0.3f, 0.0f));
+			model = glm::scale(model, glm::vec3(scale, scale, scale));
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-			// This is for the render with index element
+			// This is for the render with index elementcolor
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+			scale += 0.1f;
 		}
 
-		model = glm::rotate(model, (float)i / 3.1416f, glm::vec3(1.0f, 0.3, 0.0));
+		//model = glm::rotate(model, (float)i / 3.1416f, glm::vec3(1.0f, 0.3, 0.0));
 
 		/*
 		glm::mat4 model = glm::mat4(1.0f);

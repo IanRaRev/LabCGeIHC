@@ -264,33 +264,264 @@ void applicationLoop() {
 		glUniformMatrix4fv(locView, 1, GL_FALSE, glm::value_ptr(view));
 
 
-		//Primer cubo
-		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0, 3.0, -4.0));	
+		/* P R I M E R  C U B I T O */
+		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0, 4.0, -4.0));	
 		GLuint locModel = shader.getUniformLocation("model");
 		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
 
 		// This is for the render with index element
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
 
-		//Segundo cubo
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 3.0f, -4.0f));	
+		/* S E G U N D O  C U B I T O */
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, 4.0f, -4.0f));	
 		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
 
-		//Tercer cubito
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, 3.0f, -4.0f));
+		/* S E G U N D O  C U B I T O */
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 4.0f, -4.0f));
 		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
 
-		//Cuarto cubito
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, 2.0f, -4.0f));
+		/* T E R C E R  C U B I T O */
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 3.0f, -4.0f));
 		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
 
-		//Quinto cubito
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, 3.0f, -4.0f));
+		/* C U A R T O  C U B I T O */
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 2.0f, -4.0f));
 		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		/* Q U I N T O  C U B I T O */
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		/* S E X T O  C U B I T O */
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		/* S E P T I M O  C U B I T O */
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, 1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		/* S E P T I M O  C U B I T O */
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, 1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+
+		/*	G	*/
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 4.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 4.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 4.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 3.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 2.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 2.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.1f, 2.5f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+
+		/*	E	*/
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(4.0f, 2.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 2.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(5.5f, 2.5f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 3.25f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 3.75f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(3.5f, 3.75f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(2.5f, 3.5f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 3.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(2.1f, 1.5f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(2.3f, 1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(2.75f, 0.75f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(3.6f, 0.6f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(4.0f, 0.5f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 0.5f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		/*	I	*/
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, -1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, -1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, -1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, -2.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, -3.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, -4.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, -4.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, -4.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+
+		/*	H	*/
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, -1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, -2.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, -3.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, -4.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -2.5f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -3.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -4.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+
+		/*	C	*/
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(4.0f, -1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, -1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, -1.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, -2.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, -3.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, -4.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, -4.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(4.0f, -4.0f, -4.0f));
+		glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+
+
 
 		glBindVertexArray(0);
 
