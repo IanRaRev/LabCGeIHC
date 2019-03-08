@@ -18,6 +18,7 @@
 
 Sphere sphere(20, 20);
 Cylinder cylinder(20, 20, 0.5, 0.5);
+Cylinder cylinder2(20, 20, 0.5, 0.5);
 Box box;
 
 //GLM include
@@ -111,6 +112,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	cylinder.setShader(&shader);
 	cylinder.setColor(glm::vec3(0.8, 0.3, 1.0));
 
+	cylinder2.init();
+	cylinder2.setShader(&shader);
+	cylinder2.setColor(glm::vec3(0.8, 0.3, 1.0));
+
 	box.init();
 	box.setShader(&shader);
 	box.setColor(glm::vec3(0.2, 0.8, 0.4));
@@ -186,20 +191,56 @@ void applicationLoop() {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-
+		//matriz de proyeccion en perpectiva
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f),
 			(float)screenWidth / screenWidth, 0.01f, 100.0f);
+		//matriz de vista
 		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -8.0f));
 
+		//matriz con diagonal unitaria
+		//matriz dell cilindro del torso
 		glm::mat4 matrix0 = glm::mat4(1.0f);
+		//se coloca el torse en la coordenada 0,0,-1.0
 		matrix0 = glm::translate(matrix0, glm::vec3(0.0f, 0.0f, -1.0f));
+		//matriz de la esfera 1, se coloca -0.5 unidades en el eje y debajo del torso
 		glm::mat4 matrixs1 = glm::translate(matrix0, glm::vec3(0.0f, -0.5f, 0.0f));
+		//se escala el cilindro del torso
+
+		glm::mat4 matrixs5 = glm::translate(matrix0, glm::vec3(0.0, 0.5, 0.0));
+
+		glm::mat4 matrixs6 = glm::translate(matrixs5, glm::vec3(0.3, 0.0, 0.0));
+
+		glm::mat4 matrix7 = glm::rotate(matrixs6, -0.2f, glm::vec3(0.0f, 0.0f, 1.0f));
+		matrix7 = glm::translate(matrix7, glm::vec3(0.25f, 0.0f, 0.0f));
+		matrix7 = glm::scale(matrix7, glm::vec3(0.5, 0.15, 0.15));
+
+		cylinder.setProjectionMatrix(projection);
+		cylinder.setViewMatrix(view);
+		cylinder.enableWireMode();
+		cylinder.render(matrix7);
+
+
+		matrixs6 = glm::scale(matrixs6, glm::vec3(0.1f, 0.1f, 0.1f));
+		sphere.setProjectionMatrix(projection);
+		sphere.setViewMatrix(view);
+		sphere.enableWireMode();
+		sphere.render(matrixs6);
+
+
+
+		matrixs5 = glm::scale(matrixs5, glm::vec3(0.1f, 0.1f, 0.1f));
+		sphere.setProjectionMatrix(projection);
+		sphere.setViewMatrix(view);
+		sphere.enableWireMode();
+		sphere.render(matrixs5);
+
 		matrix0 = glm::scale(matrix0, glm::vec3(0.6f, 1.0f, 0.6f));
+		//se dibuja el cilindro
 		cylinder.setProjectionMatrix(projection);
 		cylinder.setViewMatrix(view);
 		cylinder.enableWireMode();
 		cylinder.render(matrix0);
-		
+
 		glm::mat4 matrixs2 = glm::translate(matrixs1, glm::vec3(-0.225f, 0.0f, 0.0f));
 		glm::mat4 matrixs3 = glm::translate(matrixs1, glm::vec3(0.225f, 0.0f, 0.0f));
 		matrixs1 = glm::scale(matrixs1, glm::vec3(0.1f, 0.1f, 0.1f));
@@ -208,10 +249,22 @@ void applicationLoop() {
 		sphere.enableWireMode();
 		sphere.render(matrixs1);
 
+
 		glm::mat4 matrix1 = glm::rotate(matrixs2, -0.2f, glm::vec3(0.0f, 0.0f, 1.0f));
 		matrix1 = glm::translate(matrix1, glm::vec3(0.0, -0.4, 0.0));
-
+		//--------------------------------------
 		glm::mat4 matrixs4 = glm::translate(matrix1, glm::vec3(0.0f, -0.4f, 0.0f));
+
+		//-----------------------------------------
+		//dibujando un cilindro y trasladando desde la linea 247
+		glm::mat4 matrix2 = glm::translate(matrixs4, glm::vec3(0.0f, -0.3f, 0.0f));
+		matrix2 = glm::scale(matrix2, glm::vec3(0.1f, 0.6f, 0.1f));
+		cylinder.setProjectionMatrix(projection);
+		cylinder.setViewMatrix(view);
+		cylinder.enableWireMode();
+		cylinder.render(matrix2);
+		//----------------------------------
+
 		matrixs4 = glm::scale(matrixs4, glm::vec3(0.1f, 0.1f, 0.1f));
 		sphere.setProjectionMatrix(projection);
 		sphere.setViewMatrix(view);
@@ -223,7 +276,7 @@ void applicationLoop() {
 		cylinder.setViewMatrix(view);
 		cylinder.enableWireMode();
 		cylinder.render(matrix1);
-		
+
 		matrixs2 = glm::scale(matrixs2, glm::vec3(0.1f, 0.1f, 0.1f));
 		sphere.setProjectionMatrix(projection);
 		sphere.setViewMatrix(view);
@@ -235,6 +288,9 @@ void applicationLoop() {
 		sphere.setViewMatrix(view);
 		sphere.enableWireMode();
 		sphere.render(matrixs3);
+
+		
+
 
 		glfwSwapBuffers(window);
 	}
