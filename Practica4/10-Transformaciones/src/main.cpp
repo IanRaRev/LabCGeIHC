@@ -20,6 +20,11 @@
 
 GLuint VBO, VAO, EBO;
 
+/* Variables para modificar la perspectiva */
+float horizontal = 0.0;
+float vertical = 0.0;
+float zoom = -0.8;
+
 struct Vertex {
 	glm::vec3 m_Pos;
 	glm::vec3 m_Color;
@@ -28,29 +33,53 @@ struct Vertex {
 // This is for the render with index element
 Vertex vertices[] =
 {
-	{ glm::vec3(-0.5f, -0.5f, 0.5f) ,	glm::vec3(1.0f, 0.0f, 1.0f) },
-	{ glm::vec3(0.5f , -0.5f, 0.5f) ,	glm::vec3(1.0f, 0.0f, 1.0f) },
-	{ glm::vec3(0.5f ,  0.5f, 0.5f) ,	glm::vec3(1.0f, 1.0f, 1.0f) },
-	{ glm::vec3(-0.5f,  0.5f, 0.5f) ,	glm::vec3(1.0f, 1.0f, 1.0f) },
-	{ glm::vec3(0.5f , -0.5f, -0.5f),	glm::vec3(1.0f, 0.0f, 1.0f) },
-	{ glm::vec3(0.5f ,  0.5f, -0.5f),	glm::vec3(1.0f, 0.0f, 1.0f) },
-	{ glm::vec3(-0.5f , 0.5f, -0.5f) ,	glm::vec3(1.0f, 1.0f, 0.0f) },
-	{ glm::vec3(-0.5f , -0.5f, -0.5f),	glm::vec3(1.0f, 1.0f, 0.0f) }, //Amarillo
+	{ glm::vec3(-0.5f, -0.5f, 0.5f) ,	glm::vec3(1.0f, 0.0f, 0.0f) }, //A 0
+	{ glm::vec3(0.5f , -0.5f, 0.5f) ,	glm::vec3(1.0f, 0.0f, 0.0f) }, //B 1
+	{ glm::vec3(0.5f ,  0.5f, 0.5f) ,	glm::vec3(1.0f, 0.0f, 0.0f) }, //C 2
+	{ glm::vec3(-0.5f,  0.5f, 0.5f) ,	glm::vec3(1.0f, 0.0f, 0.0f) }, //D 3 
+	{ glm::vec3(0.5f , -0.5f, -0.5f),	glm::vec3(0.0f, 1.0f, 0.0f) }, //E 4
+	{ glm::vec3(0.5f ,  0.5f, -0.5f),	glm::vec3(0.87f, 0.105f, 0.768f) }, //F 5 
+	{ glm::vec3(-0.5f , 0.5f, -0.5f) ,	glm::vec3(0.0f, 1.0f, 0.0f) }, //G 6
+	{ glm::vec3(-0.5f , -0.5f, -0.5f),	glm::vec3(0.0f, 1.0f, 0.0f) }, //H 7
+
+	{ glm::vec3(-0.5f, -0.5f, 0.5f) ,	glm::vec3(0.0f, 1.0f, 0.0f) }, //A' 8
+	{ glm::vec3(0.5f , -0.5f, 0.5f) ,	glm::vec3(0.0f, 0.0f, 1.0f) }, //B' 9
+	{ glm::vec3(0.5f ,  0.5f, 0.5f) ,	glm::vec3(0.87f, 0.105f, 0.768f) }, //C' 10
+	{ glm::vec3(-0.5f,  0.5f, 0.5f) ,	glm::vec3(0.0f, 1.0f, 0.0f) }, //D' 11
+	{ glm::vec3(0.5f , -0.5f, -0.5f),	glm::vec3(0.87f, 0.105f, 0.768f) }, //E' 12
+	{ glm::vec3(0.5f ,  0.5f, -0.5f),	glm::vec3(0.196f, 0.96f, 0.788f) }, //F' 13
+	{ glm::vec3(-0.5f , 0.5f, -0.5f) ,	glm::vec3(0.196f, 0.96f, 0.788f) }, //G' 14
+	{ glm::vec3(-0.5f , -0.5f, -0.5f),	glm::vec3(0.0f, 0.0f, 1.0f) }, //H' 15
+
+	{ glm::vec3(-0.5f, -0.5f, 0.5f) ,	glm::vec3(0.0f, 1.0f, 0.0f) }, //A'' 16
+	{ glm::vec3(0.5f , -0.5f, 0.5f) ,	glm::vec3(0.87f, 0.105f, 0.768f) }, //B'' 17
+	{ glm::vec3(0.5f ,  0.5f, 0.5f) ,	glm::vec3(0.196f, 0.96f, 0.788f) }, //C'' 18
+	{ glm::vec3(-0.5f,  0.5f, 0.5f) ,	glm::vec3(0.196f, 0.96f, 0.788f) }, //D'' 19
+	{ glm::vec3(0.5f , -0.5f, -0.5f),	glm::vec3(0.45f, 0.529f, 0.509f) }, //E'' 20 
+	{ glm::vec3(0.5f ,  0.5f, -0.5f),	glm::vec3(0.45f, 0.529f, 0.509f) }, //F'' 21
+	{ glm::vec3(-0.5f , 0.5f, -0.5f) ,	glm::vec3(0.45f, 0.529f, 0.509f) }, //G'' 22
+	{ glm::vec3(-0.5f , -0.5f, -0.5f),	glm::vec3(0.45f, 0.529f, 0.509f) }, //H'' 23
 };
 
 GLuint indices[] = {  // Note that we start from 0!
+	/* Primer cara */
 	0, 1, 2,
 	0, 2, 3,
-	1, 4, 5,
-	1, 5, 2,
-	0, 3, 6,
-	0, 6, 7,
-	0, 4, 1,
-	0, 7, 4,
-	3, 2, 5,
-	3, 5, 6,
-	4, 5, 6,
-	4, 6, 7
+	/* Segunda cara */
+	7, 8, 11,
+	7, 11, 6, 
+	/* Tercer cara  */
+	16, 9, 4,
+	16, 4, 14,
+	/* Cuarta cara */
+	17, 12, 5,
+	17, 5, 10,
+	/* Quinta cara */
+	19, 18, 13,
+	19, 13, 14,
+	/* Sexta cara */
+	23, 20, 21,
+	23, 21, 22
 };
 
 Shader shader;
@@ -190,10 +219,29 @@ void reshapeCallback(GLFWwindow* Window, int widthRes, int heightRes) {
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	if (action == GLFW_PRESS) {
-		switch (key) {
-		case GLFW_KEY_ESCAPE:
-			exitApp = true;
-			break;
+		switch (key) 
+		{
+			case GLFW_KEY_ESCAPE:
+				exitApp = true;
+				break;
+			case GLFW_KEY_UP:
+				vertical -= 0.2;
+				break;
+			case GLFW_KEY_DOWN:
+				vertical += 0.2;
+				break;
+			case GLFW_KEY_LEFT:
+				horizontal += 0.2;
+				break;
+			case GLFW_KEY_RIGHT:
+				horizontal -= 0.2;
+				break;
+			case GLFW_KEY_W:
+				zoom += 0.2;
+				break;
+			case GLFW_KEY_S:
+				zoom -= 0.2;
+				break;
 		}
 	}
 }
@@ -257,7 +305,7 @@ void applicationLoop() {
 
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f),
 			(float)screenWidth / screenWidth, 0.01f, 100.0f);
-		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -8.0f));
+		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(horizontal, vertical, zoom));
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
@@ -275,7 +323,7 @@ void applicationLoop() {
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
 			// This is for the render with index elementcolor
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLuint *)0);
+			glDrawElements(GL_TRIANGLES, 42, GL_UNSIGNED_INT, (GLuint *)0);
 			scale += 0.1f;
 		}
 

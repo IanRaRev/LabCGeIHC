@@ -22,6 +22,11 @@
 
 GLuint VBO, VAO, EBO;
 
+/* Variables para la modificar persectiva*/
+float horizontal = 0.0;
+float vertical = 0.0;
+float zoom = -0.5 ;
+
 struct Vertex {
 	glm::vec3 m_Pos;
 	glm::vec3 m_Color;
@@ -192,10 +197,28 @@ void reshapeCallback(GLFWwindow* Window, int widthRes, int heightRes) {
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	if (action == GLFW_PRESS) {
-		switch (key) {
+		switch (key) 
+		{
 		case GLFW_KEY_ESCAPE:
 			exitApp = true;
 			break;
+		case GLFW_KEY_UP: 
+			vertical += 0.1;
+			break;
+		case GLFW_KEY_DOWN:
+			vertical -= 0.1;
+			break;
+		case GLFW_KEY_LEFT:
+			horizontal -= 0.1;
+			break;
+		case GLFW_KEY_RIGHT:
+			horizontal += 0.1;
+			break;
+		case GLFW_KEY_W:
+			zoom += 0.1;
+			break;
+		case GLFW_KEY_S:
+			zoom -= 0.1;
 		}
 	}
 }
@@ -249,7 +272,7 @@ void applicationLoop() {
 
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f),
 			(float)screenWidth / screenWidth, 0.01f, 100.0f);
-		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -8.0f));
+		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(horizontal, vertical, zoom));
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
