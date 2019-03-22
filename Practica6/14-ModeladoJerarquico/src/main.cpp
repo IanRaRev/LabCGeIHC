@@ -44,10 +44,23 @@ bool exitApp = false;
 int lastMousePosX, offsetx;
 int lastMousePosY, offsety;
 
-/**/
+/* Rotación del hombro izquierdo*/
 float rot1 = 0.0;
 float rot2 = 0.0;
 float rot3 = 0.0;
+
+
+/* Rotación del hombro izquierdo*/
+float rot4 = 0.0;
+float rot5 = 0.0;
+float rot6 = 0.0;
+
+
+/* Rotación de la muñeca izquierda*/
+float rot7 = 0.0;
+float rot8 = 0.0;
+float rot9 = 0.0;
+
 
 double deltaTime;
 
@@ -216,6 +229,7 @@ bool processInput(bool continueApplication) {
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		camera->mouseMoveCamera(offsetx, offsety, deltaTime);
 
+	/* Rotación del hombro izquierdo */
 	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
 		rot1 += 0.01;
 	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
@@ -223,6 +237,21 @@ bool processInput(bool continueApplication) {
 	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
 		rot3 += 0.01;
 
+	/* Rotación del codo izquierdo */
+	if(glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+		rot4 += 0.01;
+	if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
+		rot5 += 0.01;
+	if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
+		rot6 += 0.01;
+
+	/* Rotación de la muñeca izquierda */
+	if (glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
+		rot7 += 0.01;
+	if (glfwGetKey(window, GLFW_KEY_8) == GLFW_PRESS)
+		rot8 += 0.01;
+	if (glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS)
+		rot9 += 0.01;
 	offsetx = 0;
 	offsety = 0;
 
@@ -250,9 +279,7 @@ void applicationLoop() {
 
 		//glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -8.0f));
 
-
-		// Matrix con diagonal unitaria
-		// Matriz del Cylindro del torso
+		// Matriz del Cilindro del torso
 		glm::mat4 matrix0 = glm::mat4(1.0f);
 		// Se coloca el torso en la coordenada (0, 0, -1.0)
 		matrix0 = glm::translate(matrix0, glm::vec3(0.0f, 0.0f, -1.0f));
@@ -262,30 +289,79 @@ void applicationLoop() {
 
 		glm::mat4 matrixs5 = glm::translate(matrix0, glm::vec3(0.0f, 0.5f, 0.0f));
 
-		glm::mat4 matrixs6 = glm::translate(matrixs5, glm::vec3(0.3f, 0.0f, 0.0f));
+	
 
+		/* Esfera del hombro izquierdo */
+		glm::mat4 matrixs6 = glm::translate(matrixs5, glm::vec3(0.3f, 0.0f, 0.0f));
 		matrixs6 = glm::rotate(matrixs6, rot1, glm::vec3(0.0f, 0.0f, 1.0f));
 		matrixs6 = glm::rotate(matrixs6, rot2, glm::vec3(0.0f, 1.0f, 0.0f));
 		matrixs6 = glm::rotate(matrixs6, rot3, glm::vec3(1.0f, 0.0f, 0.0f));
 
+		/* Cilindro del hombro al codo izquierdo */
 		glm::mat4 matrix7 = glm::translate(matrixs6, glm::vec3(0.25f, 0.0f, 0.0f));
 
-		glm::mat4 matrixs7 = glm::translate(matrix7, glm::vec3(0.3f, 0.0f, 0.0f));
+		/* Esfera del codo izquierdo */
+		glm::mat4 matrixs7 = glm::translate(matrix7, glm::vec3(0.25f, 0.0f, 0.0f));
+		matrixs7 = glm::rotate(matrixs7, rot4, glm::vec3(0.0f, 0.0f, 1.0f));
+		matrixs7 = glm::rotate(matrixs7, rot5, glm::vec3(0.0f, 1.0f, 0.0f));
+		matrixs7 = glm::rotate(matrixs7, rot6, glm::vec3(1.0f, 0.0f, 0.0f));
+
+		/* Cilindro del codo a la muñeca izquierda*/
+		glm::mat4 matrix8 = glm::translate(matrixs7, glm::vec3(0.25f, 0.0f, 0.0f));
+
+		/* Esfera de la muñeca */
+		glm::mat4 matrixs8 = glm::translate(matrix8, glm::vec3(0.25f, 0.0f, 0.0f));
+		matrixs8 = glm::rotate(matrixs8, rot7, glm::vec3(0.0f, 0.0f, 1.0f));
+		matrixs8 = glm::rotate(matrixs8, rot8, glm::vec3(0.0f, 1.0f, 0.0f));
+		matrixs8 = glm::rotate(matrixs8, rot9, glm::vec3(1.0f, 0.0f, 0.0f));
+
+		matrix8 = glm::rotate(matrix8, 1.5708f, glm::vec3(0.0f, 0.0f, 0.1f));
+		matrix8 = glm::scale(matrix8, glm::vec3(0.1f, 0.4f, 0.1f));
+
+
+		/* Cilindro de la mano izquierda*/
+		glm::mat4 matrix9 = glm::translate(matrixs8, glm::vec3(0.15f, 0.0f, 0.0f));
+		matrix9 = glm::rotate(matrix9, 1.5708f, glm::vec3(0.0f, 0.0f, 1.0f));
+		matrix9 = glm::scale(matrix9, glm::vec3(0.2f, 0.2f, 0.2f));
+
+
+		box.setProjectionMatrix(projection);
+		box.setViewMatrix(view);
+		//box.setPosition(glm::vec3(0.0f, 0.0f, 1.0f));
+		box.enableWireMode();
+		box.render(matrix9);
+
+		/* Dibujo de la muñeca izquierda */
+		matrixs8 = glm::scale(matrixs8, glm::vec3(0.1f, 0.1f, 0.1f));
+		sphere.setProjectionMatrix(projection);
+		sphere.setViewMatrix(view);
+		sphere.enableWireMode();
+		sphere.render(matrixs8); 
+
+		/* Cilindro del codo a la muñeca*/
+		cylinder.setProjectionMatrix(projection);
+		cylinder.setViewMatrix(view);
+		cylinder.enableWireMode();
+		cylinder.setColor(glm::vec3(0.8, 0.3, 1.0));
+		cylinder.render(matrix8);
+
+		/* Dibujo del codo izquierdo*/
 		matrixs7 = glm::scale(matrixs7, glm::vec3(0.1f, 0.1f, 0.1f));
 		sphere.setProjectionMatrix(projection);
 		sphere.setViewMatrix(view);
 		sphere.enableWireMode();
 		sphere.render(matrixs7);
 
-		//De la cosecha 
+		/* Cilindro del hombro al codo izquierdo*/
 		matrix7 = glm::rotate(matrix7, 1.5708f, glm::vec3(0.0f, 0.0f, 0.1f));
-		matrixs7 = glm::scale(matrixs7, glm::vec3(0.15f, 0.5f, 0.1f));
+		matrix7 = glm::scale(matrix7, glm::vec3(0.15f, 0.5f, 0.15f));
 		cylinder.setProjectionMatrix(projection);
 		cylinder.setViewMatrix(view);
 		cylinder.enableWireMode();
 		cylinder.setColor(glm::vec3(0.8, 0.3, 1.0));
 		cylinder.render(matrix7);
 
+		/* Esfera del hombro */
 		matrixs6 = glm::scale(matrixs6, glm::vec3(0.1f, 0.1f, 0.1f));
 		sphere.setProjectionMatrix(projection);
 		sphere.setViewMatrix(view);
@@ -300,7 +376,7 @@ void applicationLoop() {
 		sphere.render(matrixs5);
 
 		matrix0 = glm::scale(matrix0, glm::vec3(0.6f, 1.0f, 0.6f));
-		// Se dibuja el cylindro
+		/* Cilindro del torso del cuerpo */
 		cylinder.setProjectionMatrix(projection);
 		cylinder.setViewMatrix(view);
 		cylinder.enableWireMode();
@@ -354,6 +430,7 @@ void applicationLoop() {
 		sphere.setViewMatrix(view);
 		sphere.enableWireMode();
 		sphere.render(matrixs3);
+
 
 		glfwSwapBuffers(window);
 	}
