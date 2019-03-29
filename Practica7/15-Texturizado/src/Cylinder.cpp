@@ -1,6 +1,8 @@
 #include "Headers/Cylinder.h"
 
 Cylinder::Cylinder(int slices, int stacks, float topRadius, float bottomRadius, float height) {
+	this->slices = slices;
+	this->stacks = stacks;
 	float stackHeight = height / stacks;
 	float radiusStep = (topRadius - bottomRadius) / stacks;
 	int count = 0;
@@ -24,18 +26,18 @@ Cylinder::Cylinder(int slices, int stacks, float topRadius, float bottomRadius, 
 	float dTheta = float(2.0f * M_PI) / slices;
 
 	for (int i = slices; i >= 0; i--) {
-		float x = topRadius * cos(i * dTheta);
-		float z = topRadius * sin(i * dTheta);
-		vertexArray[count++] = Vertex(glm::vec3(x, y, z), glm::vec3(), glm::vec2(), glm::vec3(0, 0, z));
+		float x = cos(i * dTheta);
+		float z = sin(i * dTheta);
+		vertexArray[count++] = Vertex(glm::vec3(topRadius * x, y, topRadius * z), glm::vec3(), glm::vec2(), glm::vec3(0, 0, z));
 	}
 	vertexArray[count++] = Vertex(glm::vec3(0, y, 0), glm::vec3(), glm::vec2(), glm::vec3(0, y, 0));
 	//bottom cap
 	y = -y;
 
 	for (int i = 0; i <= slices; i++) {
-		float x = bottomRadius * cos(i * dTheta);
-		float z = bottomRadius * sin(i * dTheta);
-		vertexArray[count++] = Vertex(glm::vec3(x, y, z), glm::vec3(), glm::vec2(), glm::vec3(0, 0, z));
+		float x = cos(i * dTheta);
+		float z = sin(i * dTheta);
+		vertexArray[count++] = Vertex(glm::vec3(bottomRadius * x, y, bottomRadius * z), glm::vec3(), glm::vec2(), glm::vec3(0, 0, z));
 	}
 	vertexArray[count++] = Vertex(glm::vec3(0, y, 0), glm::vec3(), glm::vec2(), glm::vec3(0, y, 0));
 
@@ -78,6 +80,10 @@ Cylinder::Cylinder(int slices, int stacks, float topRadius, float bottomRadius, 
 
 Cylinder::~Cylinder() {
 
+}
+
+void Cylinder::render(int indexInit, int indexSize, glm::mat4 parentTrans) {
+	AbstractModel::render(indexInit, indexSize, parentTrans);
 }
 
 bool Cylinder::rayPicking(glm::vec3 init, glm::vec3 end, glm::vec3 &intersection) {
