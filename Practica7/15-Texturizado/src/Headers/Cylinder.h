@@ -9,7 +9,6 @@ class Cylinder : public AbstractModel
 public:
 	Cylinder(int slices, int stacks, float topRadius = 1.0, float bottomRadius = 1.0, float height = 1.0);
 	~Cylinder();
-	void render(int indexInit, int indexSize, glm::mat4 parentTrans = glm::mat4(1.0f));
 	int getSlices() {
 		return this->slices;
 	}

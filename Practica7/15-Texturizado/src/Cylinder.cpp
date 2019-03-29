@@ -82,10 +82,6 @@ Cylinder::~Cylinder() {
 
 }
 
-void Cylinder::render(int indexInit, int indexSize, glm::mat4 parentTrans) {
-	AbstractModel::render(indexInit, indexSize, parentTrans);
-}
-
 bool Cylinder::rayPicking(glm::vec3 init, glm::vec3 end, glm::vec3 &intersection) {
 	return false;
 }
