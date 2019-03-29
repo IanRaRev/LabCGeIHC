@@ -7,5 +7,5 @@ out vec4 color;
 void main(){
 	
 	//color = texture(ourTexture, out_uv);
-	color = vec4(0.3, 0.5, 0.4)
+	color = vec4(0.3, 0.5, 0.4, 1.0);
 }
