@@ -126,6 +126,10 @@ public:
 	}
 
 	void render(glm::mat4 parentTrans = glm::mat4(1.0f)) {
+		render(0, index.size(), parentTrans);
+	}
+
+	void render(int indexInit, int indexSize, glm::mat4 parentTrans = glm::mat4(1.0f)) {
 		shader_ptr->turnOn();
 		glBindVertexArray(VAO);
 		GLint modelLoc = shader_ptr->getUniformLocation("model");
@@ -141,7 +145,7 @@ public:
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-		glDrawElements(GL_TRIANGLES, index.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, (GLuint*)(indexInit * sizeof(GLuint)));
 		glBindVertexArray(0);
 		shader_ptr->turnOff();
 		this->enableFillMode();
