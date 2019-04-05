@@ -1,4 +1,4 @@
-/*	
+/*
 	Practica 7
 	Trabajamos con FreeImage para cargar imagenes.
 	Compatible con otros programas multiplataforma.
@@ -47,6 +47,7 @@ Shader shaderTexture;
 
 /* Agregamos textureID2*/
 GLuint textureID1, textureID2;
+GLuint TapaSuperior, Lateral, TapaInf;
 
 int screenWidth;
 int screenHeight;
@@ -59,7 +60,7 @@ int lastMousePosY, offsetY;
 
 double deltaTime;
 
-// Se definen todos las funciones.
+/* Se definen todos las funciones. */
 void reshapeCallback(GLFWwindow* Window, int widthRes, int heightRes);
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void mouseCallback(GLFWwindow* window, double xpos, double ypos);
@@ -69,7 +70,7 @@ void destroyWindow();
 void destroy();
 bool processInput(bool continueApplication = true);
 
-// Implementacion de todas las funciones.
+/* Implementacion de todas las funciones. */
 void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	if (!glfwInit()) {
@@ -139,6 +140,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	cylinder.init();
 	cylinder.setShader(&shaderTexture);
 	cylinder.setColor(glm::vec3(0.8, 0.3, 1.0));
+	cylinder.scaleUVS(glm::vec2(1.0f, 1.0f)); 
 
 	cylinder2.init();
 	cylinder2.setShader(&shaderTexture);
@@ -163,7 +165,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	// set texture filtering parameters
-	/* Pasar un filtro a la imagen. La suaviza*/
+	/* Pasar un filtro a la imagen. La suaviza */
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	if (data)
@@ -185,7 +187,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	else
 		std::cout << "Failed to load texture" << std::endl;
 	texture1.freeImage(bitmap);
-	
+
 
 
 	/* Segunda textura */
@@ -200,7 +202,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	// set texture filtering parameters
-	/* Pasar un filtro a la imagen. La suaviza*/
+	/* Pasar un filtro a la imagen. La suaviza */
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	if (data2)
@@ -221,8 +223,114 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	}
 	else
 		std::cout << "Failed to load texture" << std::endl;
-		texture2.freeImage(bitmap2);
+	texture2.freeImage(bitmap2);
 
+	/* Tapa superior */
+	Texture texture3("../../Textures/SupRecorte.png");
+	FIBITMAP* bitmap3 = texture3.loadImage(false);
+	unsigned char * data3 = texture3.convertToData(bitmap3, imageWidth, imageHeight);
+	glGenTextures(1, &TapaSuperior);
+	/* Se enlaza el tipo de textura al ID textureID1(Textura 2D) */
+	glBindTexture(GL_TEXTURE_2D, TapaSuperior);
+	// set the texture wrapping parameters
+	/* Se repite la coordenada de textura en el eje S y T (X y Y) */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	// set texture filtering parameters
+	/* Pasar un filtro a la imagen. La suaviza */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data3)
+	{
+		glTexImage2D(
+			GL_TEXTURE_2D,	/* Tipo de textura*/
+			0,				/* MIPMAPS */
+			GL_RGBA,		/* Formato interno */
+			imageWidth,		/* Alto */
+			imageHeight,	/* Ancho*/
+			0,				/* Borde */
+			GL_BGRA,		/* Formato libreria*/
+			GL_UNSIGNED_BYTE, /* Tipo de dato*/
+			data3				/* Datos de la imagen*/
+		);
+		/* Indica a OpenGL que se encargue de generar los bitmaps*/
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	texture3.freeImage(bitmap3);
+
+
+	/* Laterak */
+	Texture texture4("../../Textures/Xochi.png");
+	FIBITMAP* bitmap4 = texture4.loadImage(false);
+	unsigned char * data4 = texture4.convertToData(bitmap4, imageWidth, imageHeight);
+	glGenTextures(1, &Lateral);
+	/* Se enlaza el tipo de textura al ID textureID1(Textura 2D) */
+	glBindTexture(GL_TEXTURE_2D, Lateral);
+	// set the texture wrapping parameters
+	/* Se repite la coordenada de textura en el eje S y T (X y Y) */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	// set texture filtering parameters
+	/* Pasar un filtro a la imagen. La suaviza */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data4)
+	{
+		glTexImage2D(
+			GL_TEXTURE_2D,	/* Tipo de textura*/
+			0,				/* MIPMAPS */
+			GL_RGBA,		/* Formato interno */
+			imageWidth,		/* Alto */
+			imageHeight,	/* Ancho*/
+			0,				/* Borde */
+			GL_BGRA,		/* Formato libreria*/
+			GL_UNSIGNED_BYTE, /* Tipo de dato*/
+			data4				/* Datos de la imagen*/
+		);
+		/* Indica a OpenGL que se encargue de generar los bitmaps*/
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	texture4.freeImage(bitmap4);
+
+
+	/* TapaInferior */
+	Texture texture5("../../Textures/InfRecorte.png");
+	FIBITMAP* bitmap5 = texture5.loadImage(false);
+	unsigned char * data5 = texture5.convertToData(bitmap5, imageWidth, imageHeight);
+	glGenTextures(1, &TapaInf);
+	/* Se enlaza el tipo de textura al ID textureID1(Textura 2D) */
+	glBindTexture(GL_TEXTURE_2D, TapaInf);
+	// set the texture wrapping parameters
+	/* Se repite la coordenada de textura en el eje S y T (X y Y) */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	// set texture filtering parameters
+	/* Pasar un filtro a la imagen. La suaviza */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data5)
+	{
+		glTexImage2D(
+			GL_TEXTURE_2D,	/* Tipo de textura*/
+			0,				/* MIPMAPS */
+			GL_RGBA,		/* Formato interno */
+			imageWidth,		/* Alto */
+			imageHeight,	/* Ancho*/
+			0,				/* Borde */
+			GL_BGRA,		/* Formato libreria*/
+			GL_UNSIGNED_BYTE, /* Tipo de dato*/
+			data5				/* Datos de la imagen*/
+		);
+		/* Indica a OpenGL que se encargue de generar los bitmaps*/
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	texture5.freeImage(bitmap5);
 
 }
 
@@ -326,27 +434,40 @@ void applicationLoop() {
 		sphere2.setPosition(glm::vec3(0.0, 0.0, -4.0));
 		sphere2.render();
 
+
 		glBindTexture(GL_TEXTURE_2D, textureID2);
 		box.setProjectionMatrix(projection);
 		box.setViewMatrix(view);
 		box.setPosition(glm::vec3(2.0f, 0.0f, -3.0f));
 		box.render();
 
+		/*
+		glBindTexture(GL_TEXTURE_2D, textureID1);
+		box.setProjectionMatrix(projection);
+		box.setViewMatrix(view);
+		box.setPosition(glm::vec3(2.0f, 0.0f, -3.0f));
+		box.render();
+		*/
+
 		cylinder.setProjectionMatrix(projection);
 		cylinder.setViewMatrix(view);
 		cylinder.setPosition(glm::vec3(-2.0f, 0.0f, -3.0f));
+
+
 		/* Contorno y parte lateral del cilindro */
+		glBindTexture(GL_TEXTURE_2D, Lateral);
 		cylinder.render(0, cylinder.getSlices() * cylinder.getStacks() * 2 * 3);
-		glBindTexture(GL_TEXTURE_2D, textureID1);
 
 		/* Tapa de arriba*/
+		glBindTexture(GL_TEXTURE_2D, TapaSuperior);
 		cylinder.render(cylinder.getSlices() * cylinder.getStacks() * 2 * 3, cylinder.getSlices() * 3);
-		/*Tapa de abajo */
-		cylinder.render(0, cylinder.getSlices() * cylinder.getStacks() * 2 * 3 + cylinder.getSlices() * 3);
 
-		//Descomentar
+		/*Tapa de abajo */
+		glBindTexture(GL_TEXTURE_2D, TapaInf);
+		cylinder.render(cylinder.getSlices() * cylinder.getStacks() * 2 * 3, cylinder.getSlices() * cylinder.getStacks() * 2 * 3 + cylinder.getSlices() * 3);
+
 		/* No utilizamos ninguna textura */
-		glBindTexture(GL_TEXTURE_2D, 0);
+		/* glBindTexture(GL_TEXTURE_2D, 0);*/
 
 		glfwSwapBuffers(window);
 	}
@@ -358,3 +479,6 @@ int main(int argc, char ** argv) {
 	destroy();
 	return 1;
 }
+
+
+
