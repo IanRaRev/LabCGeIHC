@@ -439,15 +439,15 @@ void applicationLoop() {
 		box.setProjectionMatrix(projection);
 		box.setViewMatrix(view);
 		box.setPosition(glm::vec3(2.0f, 0.0f, -3.0f));
-		box.render();
+		box.render(0.0, 6.0 );
 
-		/*
+		
 		glBindTexture(GL_TEXTURE_2D, textureID1);
 		box.setProjectionMatrix(projection);
 		box.setViewMatrix(view);
 		box.setPosition(glm::vec3(2.0f, 0.0f, -3.0f));
-		box.render();
-		*/
+		box.render(6.0, 12.0);
+		
 
 		cylinder.setProjectionMatrix(projection);
 		cylinder.setViewMatrix(view);
