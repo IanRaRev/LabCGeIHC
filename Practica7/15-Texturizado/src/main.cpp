@@ -46,7 +46,7 @@ Shader shader;
 Shader shaderTexture;
 
 /* Agregamos textureID2*/
-GLuint textureID1, textureID2;
+GLuint textureID1, textureID2, textureID3;
 GLuint TapaSuperior, Lateral, TapaInf;
 
 int screenWidth;
@@ -332,6 +332,42 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 		std::cout << "Failed to load texture" << std::endl;
 	texture5.freeImage(bitmap5);
 
+
+	/* Segunda textura */
+	Texture texture6("../../Textures/test.png");
+	FIBITMAP* bitmap6 = texture6.loadImage(false);
+	unsigned char * data6 = texture6.convertToData(bitmap6, imageWidth, imageHeight);
+	glGenTextures(1, &textureID3);
+	/* Se enlaza el tipo de textura al ID textureID1(Textura 2D) */
+	glBindTexture(GL_TEXTURE_2D, textureID3);
+	// set the texture wrapping parameters
+	/* Se repite la coordenada de textura en el eje S y T (X y Y) */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	// set texture filtering parameters
+	/* Pasar un filtro a la imagen. La suaviza */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data6)
+	{
+		glTexImage2D(
+			GL_TEXTURE_2D,	/* Tipo de textura*/
+			0,				/* MIPMAPS */
+			GL_RGBA,		/* Formato interno */
+			imageWidth,		/* Alto */
+			imageHeight,	/* Ancho*/
+			0,				/* Borde */
+			GL_BGRA,		/* Formato libreria*/
+			GL_UNSIGNED_BYTE, /* Tipo de dato*/
+			data6				/* Datos de la imagen*/
+		);
+		/* Indica a OpenGL que se encargue de generar los bitmaps*/
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	texture6.freeImage(bitmap6);
+
 }
 
 void destroyWindow() {
@@ -439,15 +475,27 @@ void applicationLoop() {
 		box.setProjectionMatrix(projection);
 		box.setViewMatrix(view);
 		box.setPosition(glm::vec3(2.0f, 0.0f, -3.0f));
-		box.render(0.0, 6.0 );
+		box.render(0.0, 6.0);
 
+		/* Cara lateral derecha */
+		glBindTexture(GL_TEXTURE_2D, textureID2);
+		box.render(6.0, 6.0);
 		
+		/* Cara trasera */
+		glBindTexture(GL_TEXTURE_2D, Lateral);
+		box.render(12.0, 6.0);
+
+		/* Cara lateral izquierda  */
+		glBindTexture(GL_TEXTURE_2D, textureID2);
+		box.render(18.0, 6.0); 
+
+		/* Cara Superior */
+		glBindTexture(GL_TEXTURE_2D, textureID3);
+		box.render(24.0, 6.0);
+
+		/* Cara Inferior */
 		glBindTexture(GL_TEXTURE_2D, textureID1);
-		box.setProjectionMatrix(projection);
-		box.setViewMatrix(view);
-		box.setPosition(glm::vec3(2.0f, 0.0f, -3.0f));
-		box.render(6.0, 12.0);
-		
+		box.render(30.0, 6.0);
 
 		cylinder.setProjectionMatrix(projection);
 		cylinder.setViewMatrix(view);
