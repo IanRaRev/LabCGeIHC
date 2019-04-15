@@ -11,5 +11,6 @@ void main()
 {
 	coordTexture = in_position;
 	vec4 position = projection * view * model * vec4(in_position, 1.0);
+	//Posición de la esfera
 	gl_Position = position.xyww;
 }

@@ -3,6 +3,7 @@
 in vec3 coordTexture;
 out vec4 color;
 
+
 uniform samplerCube skybox;
 
 void main()
