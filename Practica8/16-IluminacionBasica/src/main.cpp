@@ -269,7 +269,7 @@ void applicationLoop() {
 		glUniform3f(iluminacionShader.getUniformLocation("light.ambient"), 0.1, 0.1, 0.1);
 
 		/* Componente difusa */
-		glUniform3f(iluminacionShader.getUniformLocation("light.diffuse"), 0.5, 0.2, 0.7);
+		glUniform3f(iluminacionShader.getUniformLocation("light.diffuse"), 0.4, 1.0, 0.1);
 
 		/* Componente especular*/
 		glUniform3f(iluminacionShader.getUniformLocation("light.specular"), 0.0, 1.0, 0.5);

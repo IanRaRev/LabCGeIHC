@@ -1,8 +1,3 @@
-/*
- * Practica 9
- * 12 abril 2019
- * Skybox
-*/
 //glew include
 #include <GL/glew.h>
 
@@ -36,23 +31,23 @@
 std::shared_ptr<FirstPersonCamera> camera(new FirstPersonCamera());
 
 Sphere sphere(20, 20);
-Sphere sphere2(20, 20);
 Cylinder cylinder(20, 20, 0.5, 0.5);
-Cylinder cylinder2(20, 20, 0.5, 0.5);
-Box box;
+Box box, box1;
+
+int cambioIluminacion = 1;
 
 Shader shaderColor;
 Shader shaderTexture;
 Shader shaderCubeTexture;
 Shader shaderMateriales;
-Shader shaderDirectionLight; /* Imagen 2 */
+Shader shaderDirectionLight;
 Shader shaderPointLight;
 Shader shaderSpotLight;
 
-GLuint textureID1, textureID2, textureID3, textureCubeTexture;
+GLuint fachada, pared, pasto, suelo, paredFondo, TV, vestidor, textureCubeTexture;
+GLuint MB, buro, madera, mesa, colchon;
 GLuint cubeTextureID;
 
-/* Planos que definen el cubo */
 GLenum types[6] = {
 	GL_TEXTURE_CUBE_MAP_POSITIVE_X,
 	GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
@@ -62,14 +57,20 @@ GLenum types[6] = {
 	GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 };
 
-/* Ubicación del archivo */
-std::string fileNames[6] = { 
-	"../../Textures/mp_met/met_ft.tga",
-	"../../Textures/mp_met/met_bk.tga",
-	"../../Textures/mp_met/met_up.tga",
-	"../../Textures/mp_met/met_dn.tga",
-	"../../Textures/mp_met/met_rt.tga",
-	"../../Textures/mp_met/met_lf.tga"
+std::string fileNames[6] = {
+	/*
+	"../../Textures/mp_bloodvalley/blood-valley_ft.tga",
+	"../../Textures/mp_bloodvalley/blood-valley_bk.tga",
+	"../../Textures/mp_bloodvalley/blood-valley_up.tga",
+	"../../Textures/mp_bloodvalley/blood-valley_dn.tga",
+	"../../Textures/mp_bloodvalley/blood-valley_rt.tga",
+	"../../Textures/mp_bloodvalley/blood-valley_lf.tga" */
+	"../../Textures/ame_nebula/purplenebula_ft.tga",
+	"../../Textures/ame_nebula/purplenebula_bk.tga",
+	"../../Textures/ame_nebula/purplenebula_up.tga",
+	"../../Textures/ame_nebula/purplenebula_dn.tga",
+	"../../Textures/ame_nebula/purplenebula_rt.tga",
+	"../../Textures/ame_nebula/purplenebula_lf.tga"
 };
 
 int screenWidth;
@@ -137,7 +138,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	GLenum err = glewInit();
 	if (GLEW_OK != err) {
 		std::cerr << "Failed to initialize glew" << std::endl;
-			exit(-1);
+		exit(-1);
 	}
 
 	glViewport(0, 0, screenWidth, screenHeight);
@@ -147,7 +148,6 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	shaderColor.initialize("../../Shaders/transformaciones.vs", "../../Shaders/transformaciones.fs");
 	shaderTexture.initialize("../../Shaders/texturizado_res.vs", "../../Shaders/texturizado_res.fs");
-	/* Ruta que renderiza el skybox */
 	shaderCubeTexture.initialize("../../Shaders/cubeTexture.vs", "../../Shaders/cubeTexture.fs");
 	shaderMateriales.initialize("../../Shaders/iluminacion_materiales_res.vs", "../../Shaders/iluminacion_materiales_res.fs");
 	shaderDirectionLight.initialize("../../Shaders/typeLight.vs", "../../Shaders/directionalLight.fs");
@@ -155,40 +155,21 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	shaderSpotLight.initialize("../../Shaders/typeLight.vs", "../../Shaders/spotLight.fs");
 
 	sphere.init();
-	sphere2.init();
 	cylinder.init();
-	cylinder2.init();
+	/* Cubo habitación*/
 	box.init();
+	/* Cubos para muebles */
+	box1.init();
 
-	camera->setPosition(glm::vec3(0.0f, 0.0f, 0.4f));
+	camera->setPosition(glm::vec3(0.0f, 0.0f, 15.0f));
 
-	// Textura Ladrillos
+	/* Textura fachada */
 	int imageWidth, imageHeight;
-	Texture texture("../../Textures/texturaLadrillos.jpg");
+	Texture texture("../../Textures/fachada.jpg");
 	FIBITMAP* bitmap = texture.loadImage(false);
 	unsigned char * data = texture.convertToData(bitmap, imageWidth, imageHeight);
-	glGenTextures(1, &textureID1);
-	glBindTexture(GL_TEXTURE_2D, textureID1);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	if (data){
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-		std::cout << "Failed to load texture" << std::endl;
-	texture.freeImage(bitmap);
-
-	// Texture Goku
-	texture = Texture("../../Textures/goku.png");
-	bitmap = texture.loadImage(false);
-	data = texture.convertToData(bitmap, imageWidth, imageHeight);
-	glGenTextures(1, &textureID2);
-	glBindTexture(GL_TEXTURE_2D, textureID2);
+	glGenTextures(1, &fachada);
+	glBindTexture(GL_TEXTURE_2D, fachada);
 	// set the texture wrapping parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -203,12 +184,217 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 		std::cout << "Failed to load texture" << std::endl;
 	texture.freeImage(bitmap);
 
-	// Textura cuadritos
-	texture = Texture("../../Textures/test.png");
+	/* Textura pared */
+	texture = Texture("../../Textures/pared.jpg");
 	bitmap = texture.loadImage(false);
 	data = texture.convertToData(bitmap, imageWidth, imageHeight);
-	glGenTextures(1, &textureID3);
-	glBindTexture(GL_TEXTURE_2D, textureID3);
+	glGenTextures(1, &pared);
+	glBindTexture(GL_TEXTURE_2D, pared);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	texture.freeImage(bitmap);
+
+	/* Textura pasto*/
+	texture = Texture("../../Textures/pasto.jpg");
+	bitmap = texture.loadImage(false);
+	data = texture.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &pasto);
+	glBindTexture(GL_TEXTURE_2D, pasto);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	texture.freeImage(bitmap);
+
+
+	/* Textura suelo*/
+	texture = Texture("../../Textures/suelo.jpg");
+	bitmap = texture.loadImage(false);
+	data = texture.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &suelo);
+	glBindTexture(GL_TEXTURE_2D, suelo);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	texture.freeImage(bitmap);
+
+	/* Textura pared con ventana*/
+	texture = Texture("../../Textures/pared.gif");
+	bitmap = texture.loadImage(false);
+	data = texture.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &paredFondo);
+	glBindTexture(GL_TEXTURE_2D, paredFondo);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	texture.freeImage(bitmap);
+
+
+	/* Textura TV*/
+	texture = Texture("../../Textures/TV.png");
+	bitmap = texture.loadImage(false);
+	data = texture.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &TV);
+	glBindTexture(GL_TEXTURE_2D, TV);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	texture.freeImage(bitmap);
+
+
+	/* Textura Vestidor */
+	texture = Texture("../../Textures/vestidor.jpg");
+	bitmap = texture.loadImage(false);
+	data = texture.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &vestidor);
+	glBindTexture(GL_TEXTURE_2D, vestidor);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	texture.freeImage(bitmap);
+
+	/* MB */
+	texture = Texture("../../Textures/MB.jpg");
+	bitmap = texture.loadImage(false);
+	data = texture.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &MB);
+	glBindTexture(GL_TEXTURE_2D, MB);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	texture.freeImage(bitmap);
+
+
+	/* Buró */
+	texture = Texture("../../Textures/buro.jpg");
+	bitmap = texture.loadImage(false);
+	data = texture.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &buro);
+	glBindTexture(GL_TEXTURE_2D, buro);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	texture.freeImage(bitmap);
+
+	/* Madera */
+	texture = Texture("../../Textures/madera.jpg");
+	bitmap = texture.loadImage(false);
+	data = texture.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &madera);
+	glBindTexture(GL_TEXTURE_2D, madera);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	texture.freeImage(bitmap);
+
+
+	/* Mesa */
+	texture = Texture("../../Textures/mesa.png");
+	bitmap = texture.loadImage(false);
+	data = texture.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &mesa);
+	glBindTexture(GL_TEXTURE_2D, mesa);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	texture.freeImage(bitmap);
+
+	/* Colchon */
+	texture = Texture("../../Textures/cobertor.jpg");
+	bitmap = texture.loadImage(false);
+	data = texture.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &colchon);
+	glBindTexture(GL_TEXTURE_2D, colchon);
 	// set the texture wrapping parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -243,7 +429,6 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 			std::cout << "Failed to load texture" << std::endl;
 		texture.freeImage(bitmap);
 	}
-
 }
 
 void destroyWindow() {
@@ -264,6 +449,7 @@ void destroy() {
 	sphere.destroy();
 	cylinder.destroy();
 	box.destroy();
+	box1.destroy();
 }
 
 void reshapeCallback(GLFWwindow* Window, int widthRes, int heightRes) {
@@ -273,11 +459,22 @@ void reshapeCallback(GLFWwindow* Window, int widthRes, int heightRes) {
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode) {
-	if (action == GLFW_PRESS) {
-		switch (key) {
-		case GLFW_KEY_ESCAPE:
-			exitApp = true;
-			break;
+	if (action == GLFW_PRESS) 
+	{
+		switch (key) 
+		{
+			case GLFW_KEY_ESCAPE:
+				exitApp = true;
+				break;
+			case GLFW_KEY_P:
+				cambioIluminacion = 1;
+				break;
+			case GLFW_KEY_L:
+				cambioIluminacion = 2;
+				break;
+			case GLFW_KEY_M:
+				cambioIluminacion = 3;
+				break;
 		}
 	}
 }
@@ -332,7 +529,7 @@ void applicationLoop() {
 
 	glm::vec3 objPosition = glm::vec3(0.0f, 0.0f, -3.0f);
 	float angle = 0.0;
-	float ratio = 20.0;
+	float ratio = 10.0;
 
 	while (psi) {
 		psi = processInput(true);
@@ -348,80 +545,460 @@ void applicationLoop() {
 
 		glm::mat4 cubeModelMatrix = glm::translate(glm::mat4(1.0f), objPosition);
 
-		glBindTexture(GL_TEXTURE_2D, textureID2);
-		cylinder.setProjectionMatrix(projection);
-		cylinder.setViewMatrix(view);
-		cylinder.setShader(&shaderTexture);
-		cylinder.render(0, cylinder.getSlices() * cylinder.getStacks() * 2 * 3, cubeModelMatrix);
-		glBindTexture(GL_TEXTURE_2D, textureID1);
-		cylinder.render(cylinder.getSlices() * cylinder.getStacks() * 2 * 3, cylinder.getSlices() * 3, cubeModelMatrix);
-		glBindTexture(GL_TEXTURE_2D, textureID3);
-		cylinder.render(cylinder.getSlices() * cylinder.getStacks() * 2 * 3 + cylinder.getSlices() * 3, cylinder.getSlices() * 3, cubeModelMatrix);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-
-		cylinder2.setProjectionMatrix(projection);
-		cylinder2.setViewMatrix(view);
-		cylinder2.setShader(&shaderTexture);
-		cylinder2.render(0, cylinder.getSlices() * cylinder.getStacks() * 2 * 3, cubeModelMatrix);
-		glBindTexture(GL_TEXTURE_2D, textureID1);
-		cylinder2.render(cylinder.getSlices() * cylinder.getStacks() * 2 * 3, cylinder.getSlices() * 3, cubeModelMatrix);
-		glBindTexture(GL_TEXTURE_2D, textureID3);
-		cylinder2.render(cylinder.getSlices() * cylinder.getStacks() * 2 * 3 + cylinder.getSlices() * 3, cylinder.getSlices() * 3, cubeModelMatrix);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-
-		glBindTexture(GL_TEXTURE_2D, textureID2);
-		sphere2.setShader(&shaderSpotLight);
-		sphere2.setProjectionMatrix(projection);
-		sphere2.setViewMatrix(view);
-		sphere2.setPosition(glm::vec3(0.0, 0.0, 0.0));
-		sphere2.setScale(glm::vec3(1.0, 1.0, 1.0));
-
 		// Iluminación
 		glm::mat4 lightModelmatrix = glm::rotate(cubeModelMatrix, angle, glm::vec3(0.0f, 1.0f, 0.0f));
 		lightModelmatrix = glm::translate(lightModelmatrix, glm::vec3(0.0f, 0.0f, -ratio));
-		shaderSpotLight.turnOn();
-		/* Posición de la luz */
-		//glUniform3fv(shaderSpotLight.getUniformLocation("light.position"), 1, glm::value_ptr(glm::vec3(1.0, 0.0, 0.0)));
-		//glUniform3fv(shaderSpotLight.getUniformLocation("light.direction"), 1, glm::value_ptr(glm::vec3(-0.3f, -1.0f, -0.2f)));
-		glUniform3fv(shaderSpotLight.getUniformLocation("light.position"), 1, glm::value_ptr(camera->getPosition()));
-		glUniform3fv(shaderSpotLight.getUniformLocation("light.direction"),1, glm::value_ptr(camera->getFront()));
-		glUniform3fv(shaderSpotLight.getUniformLocation("viewPos"), 1, glm::value_ptr(camera->getPosition()));
-		glUniform3f(shaderSpotLight.getUniformLocation("light.ambient"), 0.2, 0.2, 0.2);
-		glUniform3f(shaderSpotLight.getUniformLocation("light.diffuse"), 0.2, 0.3, 0.6);
-		glUniform3f(shaderSpotLight.getUniformLocation("light.specular"), 0.5, 0.3, 0.2);
-		glUniform3f(shaderSpotLight.getUniformLocation("material.ambient"), 1.0, 0.2, 0.6);
-		glUniform3f(shaderSpotLight.getUniformLocation("material.diffuse"), 0.4, 0.5, 0.8);
-		glUniform3f(shaderSpotLight.getUniformLocation("material.specular"), 0.5, 0.3, 0.2);
-		/* Pära spotlight */
-		glUniform1f(shaderSpotLight.getUniformLocation("light.cutOff"), glm::cos(glm::radians(5.0f)));
-		glUniform1f(shaderSpotLight.getUniformLocation("light.outerCutOff"), glm::cos(glm::radians(7.0f)));
-		/* Para spotlight */
-		glUniform1f(shaderSpotLight.getUniformLocation("light.constant"), 1.0f);
-		glUniform1f(shaderSpotLight.getUniformLocation("light.linear"), 0.7f);
-		glUniform1f(shaderSpotLight.getUniformLocation("light.quadratics"), 1.8f);
-		glUniform1f(shaderSpotLight.getUniformLocation("material.shininess"), 32.0);
 
-		sphere2.render();
-		sphere2.setPosition(glm::vec3(0.0, 0.0, -10.0));
-		sphere2.render();
+		if (cambioIluminacion == 1)
+		{
+			shaderDirectionLight.turnOn();
+			glUniform3fv(shaderDirectionLight.getUniformLocation("light.position"), 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 0.0f)));
+			glUniform3fv(shaderDirectionLight.getUniformLocation("light.direction"), 1, glm::value_ptr(glm::vec3(-0.3f, -1.0f, -0.2f)));
+			//glUniform3fv(shaderDirectionLight.getUniformLocation("light.position"), 1, glm::value_ptr(camera->getPosition()));
+			//glUniform3fv(shaderDirectionLight.getUniformLocation("light.direction"), 1, glm::value_ptr(camera->getFront()));
+			glUniform3fv(shaderDirectionLight.getUniformLocation("viewPos"), 1, glm::value_ptr(camera->getPosition()));
+			glUniform3f(shaderDirectionLight.getUniformLocation("light.ambient"), 0.2, 0.2, 0.2);
+			glUniform3f(shaderDirectionLight.getUniformLocation("light.diffuse"), 0.2, 0.3, 0.6);
+			glUniform3f(shaderDirectionLight.getUniformLocation("light.specular"), 0.5, 0.3, 0.2);
+			glUniform3f(shaderDirectionLight.getUniformLocation("material.ambient"), 1.0, 0.2, 0.6);
+			glUniform3f(shaderDirectionLight.getUniformLocation("material.diffuse"), 0.4, 0.5, 0.8);
+			glUniform3f(shaderDirectionLight.getUniformLocation("material.specular"), 0.5, 0.3, 0.2);
+			//glUniform1f(shaderDirectionLight.getUniformLocation("light.cutOff"), glm::cos(glm::radians(12.5f)));
+			//glUniform1f(shaderDirectionLight.getUniformLocation("light.outerCutOff"), glm::cos(glm::radians(15.0f)));
+			glUniform1f(shaderDirectionLight.getUniformLocation("light.constant"), 1.0f);
+			glUniform1f(shaderDirectionLight.getUniformLocation("light.linear"), 0.14f);
+			glUniform1f(shaderDirectionLight.getUniformLocation("light.quadratics"), 0.07f);
+			glUniform1f(shaderDirectionLight.getUniformLocation("material.shininess"), 32.0);
 
-		cylinder2.setShader(&shaderSpotLight);
-		cylinder2.setProjectionMatrix(projection);
-		cylinder2.setViewMatrix(view);
-		cylinder2.setPosition(glm::vec3(2.0, 0.0, 0.0));
-		cylinder2.render();
+			glBindTexture(GL_TEXTURE_2D, madera);
+			cylinder.setProjectionMatrix(projection);
+			cylinder.setViewMatrix(view);
+			cylinder.setShader(&shaderDirectionLight);
+			cylinder.render(0, cylinder.getSlices() * cylinder.getStacks() * 2 * 3, cubeModelMatrix);
+			glBindTexture(GL_TEXTURE_2D, fachada);
+			cylinder.render(cylinder.getSlices() * cylinder.getStacks() * 2 * 3, cylinder.getSlices() * 3, cubeModelMatrix);
+			glBindTexture(GL_TEXTURE_2D, pasto);
+			cylinder.render(cylinder.getSlices() * cylinder.getStacks() * 2 * 3 + cylinder.getSlices() * 3, cylinder.getSlices() * 3, cubeModelMatrix);
+			glBindTexture(GL_TEXTURE_2D, 0);
 
-		shaderSpotLight.turnOff();
-		glBindTexture(GL_TEXTURE_2D, 0);
+
+			//cylinder.setShader(&shaderTexture);
+			cylinder.setProjectionMatrix(projection);
+			cylinder.setViewMatrix(view);
+			cylinder.setPosition(glm::vec3(2.0, -3.6, -3.0));
+			cylinder.setScale(glm::vec3(0.1, 0.7, 0.1));
+			glBindTexture(GL_TEXTURE_2D, madera);
+			cylinder.render();
+
+			cylinder.setProjectionMatrix(projection);
+			cylinder.setViewMatrix(view);
+			cylinder.setPosition(glm::vec3(-4.0, -3.6, 0.0));
+			cylinder.setScale(glm::vec3(0.1, 0.7, 0.1));
+			glBindTexture(GL_TEXTURE_2D, madera);
+			cylinder.render();
+
+			/* Cubo casa */
+			box.setProjectionMatrix(projection);
+			box.setViewMatrix(view);
+			box.setShader(&shaderDirectionLight);;
+			box.setScale(glm::vec3(10.0f, 8.0f, 20.0f));
+			box.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+
+
+			/* Fachada*/
+			glBindTexture(GL_TEXTURE_2D, fachada);
+			box.render(0.0, 6.0);
+			/* Pared derecha*/
+			glBindTexture(GL_TEXTURE_2D, pared);
+			box.render(6.0, 6.0);
+			/* Pared izquierda */
+			glBindTexture(GL_TEXTURE_2D, pared);
+			box.render(18.0, 6.0);
+			/*Suelo*/
+			glBindTexture(GL_TEXTURE_2D, suelo);
+			box.render(30.0, 6.0);
+			/*Pared fondo*/
+			glBindTexture(GL_TEXTURE_2D, paredFondo);
+			box.render(12.0, 6.0);
+
+			/* Jardin */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setShader(&shaderDirectionLight);
+			box1.setScale(glm::vec3(20.0f, 20.0f, 40.0f));
+			box1.setPosition(glm::vec3(0.0f, 5.99f, 0.0f));
+			/* Jardin xD*/
+			glBindTexture(GL_TEXTURE_2D, pasto);
+			box1.render(30.0, 6.0);
+
+			/* Televisión */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(0.2f, 2.0f, 3.0f));
+			box1.setPosition(glm::vec3(4.79f, 1.0f, -5.0f));
+			glBindTexture(GL_TEXTURE_2D, TV);
+			box1.render();
+
+			/* Ropero */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(5.0f, 4.0f, 1.0f));
+			box1.setPosition(glm::vec3(2.0f, -2.0f, -9.5f));
+			glBindTexture(GL_TEXTURE_2D, vestidor);
+			box1.render(0.0, 6.0);
+			glBindTexture(GL_TEXTURE_2D, MB);
+			box1.render(18.0, 6.0);
+			glBindTexture(GL_TEXTURE_2D, MB);
+			box1.render(24.0, 6.0);
+
+
+			/* Buró */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(2.0f, 2.0f, 2.0f));
+			box1.setPosition(glm::vec3(-4.0f, -3.0f, 0.0f));
+			glBindTexture(GL_TEXTURE_2D, buro);
+			box1.render(6.0, 6.0);
+			glBindTexture(GL_TEXTURE_2D, madera);
+			box1.render(12.0, 6.0);
+			glBindTexture(GL_TEXTURE_2D, madera);
+			box1.render(0.0, 6.0);
+			glBindTexture(GL_TEXTURE_2D, madera);
+			box1.render(24.0, 6.0);
+
+			/* Mesa */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(1.0f, 5.0f, 5.0f));
+			box1.setPosition(glm::vec3(-4.0f, -3.0f, 6.0f));
+			glBindTexture(GL_TEXTURE_2D, mesa);
+			box1.render(6.0, 6.0);
+
+
+			/* Cama */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(6.0f, 0.51f, 4.0f));
+			box1.setPosition(glm::vec3(-1.0f, -3.0f, -5.0f));
+			glBindTexture(GL_TEXTURE_2D, madera);
+			box1.render();
+
+			/* Cama */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(6.0f, 0.4f, 4.0f));
+			box1.setPosition(glm::vec3(-1.0f, -2.59f, -5.0f));
+			glBindTexture(GL_TEXTURE_2D, colchon);
+			box1.render();
+
+			shaderDirectionLight.turnOff();
+			glBindTexture(GL_TEXTURE_2D, 0);
+			//cylinder.render();
+		}
+
+		else if (cambioIluminacion == 2)
+		{
+			// Iluminación
+
+			shaderPointLight.turnOn();
+			glUniform3fv(shaderPointLight.getUniformLocation("light.position"), 1, glm::value_ptr(glm::vec3(0.5f, 0.0f, 0.0f)));
+			glUniform3fv(shaderPointLight.getUniformLocation("light.direction"), 1, glm::value_ptr(glm::vec3(-0.3f, -1.0f, -0.2f)));
+			//glUniform3fv(shaderPointLight.getUniformLocation("light.position"), 1, glm::value_ptr(camera->getPosition()));
+			//glUniform3fv(shaderPointLight.getUniformLocation("light.direction"), 1, glm::value_ptr(camera->getFront()));
+			glUniform3fv(shaderPointLight.getUniformLocation("viewPos"), 1, glm::value_ptr(camera->getPosition()));
+			glUniform3f(shaderPointLight.getUniformLocation("light.ambient"), 0.2, 0.2, 0.2);
+			glUniform3f(shaderPointLight.getUniformLocation("light.diffuse"), 0.2, 0.3, 0.6);
+			glUniform3f(shaderPointLight.getUniformLocation("light.specular"), 0.5, 0.3, 0.2);
+			glUniform3f(shaderPointLight.getUniformLocation("material.ambient"), 1.0, 0.2, 0.6);
+			glUniform3f(shaderPointLight.getUniformLocation("material.diffuse"), 0.4, 0.5, 0.8);
+			glUniform3f(shaderPointLight.getUniformLocation("material.specular"), 0.5, 0.3, 0.2);
+			//glUniform1f(shaderPointLight.getUniformLocation("light.cutOff"), glm::cos(glm::radians(12.5f)));
+			//glUniform1f(shaderPointLight.getUniformLocation("light.outerCutOff"), glm::cos(glm::radians(15.0f)));
+			glUniform1f(shaderPointLight.getUniformLocation("light.constant"), 1.0f);
+			glUniform1f(shaderPointLight.getUniformLocation("light.linear"), 0.14f);
+			glUniform1f(shaderPointLight.getUniformLocation("light.quadratics"), 0.07f);
+			glUniform1f(shaderPointLight.getUniformLocation("material.shininess"), 32.0);
+
+			glBindTexture(GL_TEXTURE_2D, madera);
+			cylinder.setProjectionMatrix(projection);
+			cylinder.setViewMatrix(view);
+			cylinder.setShader(&shaderPointLight);
+			cylinder.render(0, cylinder.getSlices() * cylinder.getStacks() * 2 * 3, cubeModelMatrix);
+			glBindTexture(GL_TEXTURE_2D, fachada);
+			cylinder.render(cylinder.getSlices() * cylinder.getStacks() * 2 * 3, cylinder.getSlices() * 3, cubeModelMatrix);
+			glBindTexture(GL_TEXTURE_2D, pasto);
+			cylinder.render(cylinder.getSlices() * cylinder.getStacks() * 2 * 3 + cylinder.getSlices() * 3, cylinder.getSlices() * 3, cubeModelMatrix);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+
+			//cylinder.setShader(&shaderTexture);
+			cylinder.setProjectionMatrix(projection);
+			cylinder.setViewMatrix(view);
+			cylinder.setPosition(glm::vec3(2.0, -3.6, -3.0));
+			cylinder.setScale(glm::vec3(0.1, 0.7, 0.1));
+			glBindTexture(GL_TEXTURE_2D, madera);
+			cylinder.render();
+
+			cylinder.setProjectionMatrix(projection);
+			cylinder.setViewMatrix(view);
+			cylinder.setPosition(glm::vec3(-4.0, -3.6, 0.0));
+			cylinder.setScale(glm::vec3(0.1, 0.7, 0.1));
+			glBindTexture(GL_TEXTURE_2D, madera);
+			cylinder.render();
+
+			/* Cubo casa */
+			box.setProjectionMatrix(projection);
+			box.setViewMatrix(view);
+			box.setShader(&shaderPointLight);
+			box.setScale(glm::vec3(10.0f, 8.0f, 20.0f));
+			box.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+
+
+			/* Fachada*/
+			glBindTexture(GL_TEXTURE_2D, fachada);
+			box.render(0.0, 6.0);
+			/* Pared derecha*/
+			glBindTexture(GL_TEXTURE_2D, pared);
+			box.render(6.0, 6.0);
+			/* Pared izquierda */
+			glBindTexture(GL_TEXTURE_2D, pared);
+			box.render(18.0, 6.0);
+			/*Suelo*/
+			glBindTexture(GL_TEXTURE_2D, suelo);
+			box.render(30.0, 6.0);
+			/*Pared fondo*/
+			glBindTexture(GL_TEXTURE_2D, paredFondo);
+			box.render(12.0, 6.0);
+
+			/* Jardin */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setShader(&shaderPointLight);
+			box1.setScale(glm::vec3(20.0f, 20.0f, 40.0f));
+			box1.setPosition(glm::vec3(0.0f, 5.99f, 0.0f));
+			/* Jardin xD*/
+			glBindTexture(GL_TEXTURE_2D, pasto);
+			box1.render(30.0, 6.0);
+
+			/* Televisión */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(0.2f, 2.0f, 3.0f));
+			box1.setPosition(glm::vec3(4.79f, 1.0f, -5.0f));
+			glBindTexture(GL_TEXTURE_2D, TV);
+			box1.render();
+
+			/* Ropero */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(5.0f, 4.0f, 1.0f));
+			box1.setPosition(glm::vec3(2.0f, -2.0f, -9.5f));
+			glBindTexture(GL_TEXTURE_2D, vestidor);
+			box1.render(0.0, 6.0);
+			glBindTexture(GL_TEXTURE_2D, MB);
+			box1.render(18.0, 6.0);
+			glBindTexture(GL_TEXTURE_2D, MB);
+			box1.render(24.0, 6.0);
+
+
+			/* Buró */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(2.0f, 2.0f, 2.0f));
+			box1.setPosition(glm::vec3(-4.0f, -3.0f, 0.0f));
+			glBindTexture(GL_TEXTURE_2D, buro);
+			box1.render(6.0, 6.0);
+			glBindTexture(GL_TEXTURE_2D, madera);
+			box1.render(12.0, 6.0);
+			glBindTexture(GL_TEXTURE_2D, madera);
+			box1.render(0.0, 6.0);
+			glBindTexture(GL_TEXTURE_2D, madera);
+			box1.render(24.0, 6.0);
+
+			/* Mesa */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(1.0f, 5.0f, 5.0f));
+			box1.setPosition(glm::vec3(-4.0f, -3.0f, 6.0f));
+			glBindTexture(GL_TEXTURE_2D, mesa);
+			box1.render(6.0, 6.0);
+
+
+			/* Cama */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(6.0f, 0.51f, 4.0f));
+			box1.setPosition(glm::vec3(-1.0f, -3.0f, -5.0f));
+			glBindTexture(GL_TEXTURE_2D, madera);
+			box1.render();
+
+			/* Cama */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(6.0f, 0.4f, 4.0f));
+			box1.setPosition(glm::vec3(-1.0f, -2.59f, -5.0f));
+			glBindTexture(GL_TEXTURE_2D, colchon);
+			box1.render();
+
+			//cylinder.render();
+			shaderPointLight.turnOff();
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+
+
+		else if (cambioIluminacion == 3)
+		{
+			shaderSpotLight.turnOn();
+			//glUniform3fv(shaderSpotLight.getUniformLocation("light.position"), 1, glm::value_ptr(glm::vec3(lightModelmatrix3 * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f))));
+			//glUniform3fv(shaderSpotLight.getUniformLocation("light.direction"), 1, glm::value_ptr(glm::vec3(-0.3f, -1.0f, -0.2f)));
+			glUniform3fv(shaderSpotLight.getUniformLocation("light.position"), 1, glm::value_ptr(camera->getPosition()));
+			glUniform3fv(shaderSpotLight.getUniformLocation("light.direction"), 1, glm::value_ptr(camera->getFront()));
+			glUniform3fv(shaderSpotLight.getUniformLocation("viewPos"), 1, glm::value_ptr(camera->getPosition()));
+			glUniform3f(shaderSpotLight.getUniformLocation("light.ambient"), 0.2, 0.2, 0.2);
+			glUniform3f(shaderSpotLight.getUniformLocation("light.diffuse"), 0.2, 0.3, 0.6);
+			glUniform3f(shaderSpotLight.getUniformLocation("light.specular"), 0.5, 0.3, 0.2);
+			glUniform3f(shaderSpotLight.getUniformLocation("material.ambient"), 1.0, 0.2, 0.6);
+			glUniform3f(shaderSpotLight.getUniformLocation("material.diffuse"), 0.4, 0.5, 0.8);
+			glUniform3f(shaderSpotLight.getUniformLocation("material.specular"), 0.5, 0.3, 0.2);
+			glUniform1f(shaderSpotLight.getUniformLocation("light.cutOff"), glm::cos(glm::radians(12.5f)));
+			glUniform1f(shaderSpotLight.getUniformLocation("light.outerCutOff"), glm::cos(glm::radians(15.0f)));
+			glUniform1f(shaderSpotLight.getUniformLocation("light.constant"), 1.0f);
+			glUniform1f(shaderSpotLight.getUniformLocation("light.linear"), 0.14f);
+			glUniform1f(shaderSpotLight.getUniformLocation("light.quadratics"), 0.07f);
+			glUniform1f(shaderSpotLight.getUniformLocation("material.shininess"), 32.0);
+
+			/* Aqui va*/
+			glBindTexture(GL_TEXTURE_2D, madera);
+			cylinder.setProjectionMatrix(projection);
+			cylinder.setViewMatrix(view);
+			cylinder.setShader(&shaderSpotLight);
+			cylinder.render(0, cylinder.getSlices() * cylinder.getStacks() * 2 * 3, cubeModelMatrix);
+			glBindTexture(GL_TEXTURE_2D, fachada);
+			cylinder.render(cylinder.getSlices() * cylinder.getStacks() * 2 * 3, cylinder.getSlices() * 3, cubeModelMatrix);
+			glBindTexture(GL_TEXTURE_2D, pasto);
+			cylinder.render(cylinder.getSlices() * cylinder.getStacks() * 2 * 3 + cylinder.getSlices() * 3, cylinder.getSlices() * 3, cubeModelMatrix);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+
+			//cylinder.setShader(&shaderTexture);
+			cylinder.setProjectionMatrix(projection);
+			cylinder.setViewMatrix(view);
+			cylinder.setPosition(glm::vec3(2.0, -3.6, -3.0));
+			cylinder.setScale(glm::vec3(0.1, 0.7, 0.1));
+			glBindTexture(GL_TEXTURE_2D, madera);
+			cylinder.render();
+
+			cylinder.setProjectionMatrix(projection);
+			cylinder.setViewMatrix(view);
+			cylinder.setPosition(glm::vec3(-4.0, -3.6, 0.0));
+			cylinder.setScale(glm::vec3(0.1, 0.7, 0.1));
+			glBindTexture(GL_TEXTURE_2D, madera);
+			cylinder.render();
+
+			/* Cubo casa */
+			box.setProjectionMatrix(projection);
+			box.setViewMatrix(view);
+			box.setShader(&shaderSpotLight);
+			box.setScale(glm::vec3(10.0f, 8.0f, 20.0f));
+			box.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+
+
+			/* Fachada*/
+			glBindTexture(GL_TEXTURE_2D, fachada);
+			box.render(0.0, 6.0);
+			/* Pared derecha*/
+			glBindTexture(GL_TEXTURE_2D, pared);
+			box.render(6.0, 6.0);
+			/* Pared izquierda */
+			glBindTexture(GL_TEXTURE_2D, pared);
+			box.render(18.0, 6.0);
+			/*Suelo*/
+			glBindTexture(GL_TEXTURE_2D, suelo);
+			box.render(30.0, 6.0);
+			/*Pared fondo*/
+			glBindTexture(GL_TEXTURE_2D, paredFondo);
+			box.render(12.0, 6.0);
+
+			/* Jardin */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setShader(&shaderSpotLight);
+			box1.setScale(glm::vec3(20.0f, 20.0f, 40.0f));
+			box1.setPosition(glm::vec3(0.0f, 5.99f, 0.0f));
+			/* Jardin xD*/
+			glBindTexture(GL_TEXTURE_2D, pasto);
+			box1.render(30.0, 6.0);
+
+			/* Televisión */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(0.2f, 2.0f, 3.0f));
+			box1.setPosition(glm::vec3(4.79f, 1.0f, -5.0f));
+			glBindTexture(GL_TEXTURE_2D, TV);
+			box1.render();
+
+			/* Ropero */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(5.0f, 4.0f, 1.0f));
+			box1.setPosition(glm::vec3(2.0f, -2.0f, -9.5f));
+			glBindTexture(GL_TEXTURE_2D, vestidor);
+			box1.render(0.0, 6.0);
+			glBindTexture(GL_TEXTURE_2D, MB);
+			box1.render(18.0, 6.0);
+			glBindTexture(GL_TEXTURE_2D, MB);
+			box1.render(24.0, 6.0);
+
+
+			/* Buró */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(2.0f, 2.0f, 2.0f));
+			box1.setPosition(glm::vec3(-4.0f, -3.0f, 0.0f));
+			glBindTexture(GL_TEXTURE_2D, buro);
+			box1.render(6.0, 6.0);
+			glBindTexture(GL_TEXTURE_2D, madera);
+			box1.render(12.0, 6.0);
+			glBindTexture(GL_TEXTURE_2D, madera);
+			box1.render(0.0, 6.0);
+			glBindTexture(GL_TEXTURE_2D, madera);
+			box1.render(24.0, 6.0);
+
+			/* Mesa */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(1.0f, 5.0f, 5.0f));
+			box1.setPosition(glm::vec3(-4.0f, -3.0f, 6.0f));
+			glBindTexture(GL_TEXTURE_2D, mesa);
+			box1.render(6.0, 6.0);
+
+
+			/* Cama */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(6.0f, 0.51f, 4.0f));
+			box1.setPosition(glm::vec3(-1.0f, -3.0f, -5.0f));
+			glBindTexture(GL_TEXTURE_2D, madera);
+			box1.render();
+
+			/* Cama */
+			box1.setProjectionMatrix(projection);
+			box1.setViewMatrix(view);
+			box1.setScale(glm::vec3(6.0f, 0.4f, 4.0f));
+			box1.setPosition(glm::vec3(-1.0f, -2.59f, -5.0f));
+			glBindTexture(GL_TEXTURE_2D, colchon);
+			box1.render();
+			/* Aquí termina xD*/
+
+			//cylinder.render();
+			shaderSpotLight.turnOff();
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
 
 		if (angle > 2 * M_PI)
 			angle = 0.0;
 		else
 			angle += 0.001;
-		
-		/* Renderizado*/
 
 		sphere.setShader(&shaderColor);
 		sphere.setColor(glm::vec3(0.4f, 0.3f, 0.6f));
@@ -434,9 +1011,9 @@ void applicationLoop() {
 		// Se Dibuja el Skybox
 		GLint oldCullFaceMode;
 		GLint oldDepthFuncMode;
-		/* Prueba de las caras ocultas. Bandera que descarta la geometría si no cumple la regla de la mano derecha */
 		glGetIntegerv(GL_CULL_FACE_MODE, &oldCullFaceMode);
 		glGetIntegerv(GL_DEPTH_FUNC, &oldDepthFuncMode);
+
 		shaderCubeTexture.turnOn();
 		GLuint cubeTextureId = shaderCubeTexture.getUniformLocation("skybox");
 		glUniform1f(cubeTextureId, 0);
@@ -444,17 +1021,16 @@ void applicationLoop() {
 		glDepthFunc(GL_LEQUAL);
 		sphere.setShader(&shaderCubeTexture);
 		sphere.setProjectionMatrix(projection);
-		/* Quitamos la posición de la esfera*/
-		/* sphere.setViewMatrix(glm::mat4(glm::mat3(view)));*/
-		sphere.setViewMatrix(view); /* Visualizamos de forma externa la esfera */
-		sphere.setScale(glm::vec3(20.0f, 20.0f, 20.0f));
-		/* Dibujado de la esfera*/
+		/* Quitamos la posición de la esfera */
+		/*sphere.setViewMatrix(glm::mat4(glm::mat3(view)));*/
+		sphere.setViewMatrix(view);
+		/* Podemos "salir" del skybox*/
+		sphere.setScale(glm::vec3(75.0f, 75.0f, 75.0f));
 		sphere.render();
 		glCullFace(oldCullFaceMode);
 		glDepthFunc(oldDepthFuncMode);
-		shaderCubeTexture.turnOff();
 
-		/* Renderizado*/
+		shaderCubeTexture.turnOff();
 
 		glfwSwapBuffers(window);
 	}
