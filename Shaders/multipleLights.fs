@@ -36,6 +36,7 @@ struct  SpotLight{
 
 };
 
+//Se define la cantidad maxima de luces del shader. Constantes
 const int MAX_POINT_LIGHTS = 3;
 const int MAX_SPOT_LIGHTS = 5;
 
@@ -48,6 +49,7 @@ in vec2 our_uv;
 uniform int pointLightCount;
 uniform int spotLightCount;
 
+//Se define luz direccionel, arreglo de luces puntuales y arreglo de luces direccionales
 uniform DirectionalLight directionalLight;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
@@ -99,6 +101,7 @@ vec3 calculateSpotLights(){
 	}
 	return result;
 }
+
 
 void main()
 {
