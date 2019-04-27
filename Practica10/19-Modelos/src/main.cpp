@@ -28,6 +28,7 @@
 //Model includes
 #include "Headers/Model.h"
 
+
 #define ARRAY_SIZE_IN_ELEMENTS(a) (sizeof(a)/sizeof(a[0]))
 
 std::shared_ptr<FirstPersonCamera> camera(new FirstPersonCamera());
@@ -44,13 +45,17 @@ Shader shaderMateriales;
 Shader shaderDirectionLight;
 Shader shaderPointLight;
 Shader shaderSpotLight;
+/* Shader con multiples luces */
 Shader shaderLighting;
 
+/* Cada variable es un modelo*/
 Model modelRock;
 Model modelRail;
 Model modelAirCraft;
 Model arturito;
 Model modelTrain;
+Model kangu;
+Model BB8;
 
 GLuint textureID1, textureID2, textureID3, textureCespedID, textureWaterID, textureCubeTexture;
 GLuint cubeTextureID;
@@ -158,12 +163,16 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	sphere.init();
 	cylinder.init();
 	box.init();
+	/* Se escala las coordenadas de textura. La textura se va a repetir 100 veces */
 	box.scaleUVS(glm::vec2(100.0, 100.0));
 	boxWater.init();
 	boxWater.scaleUVS(glm::vec2(1.0, 1.0));
+	/* Carga de los modelos */
 	modelRock.loadModel("../../models/rock/rock.obj");
 	modelRail.loadModel("../../models/railroad/railroad_track.obj");
 	modelAirCraft.loadModel("../../models/Aircraft_obj/E 45 Aircraft_obj.obj");
+	kangu.loadModel("../../models/kangu/12271_Kangaroo_v1_L3.obj");
+	BB8.loadModel("../../models/BB8 New/bb8.obj");
 
 	camera->setPosition(glm::vec3(0.0f, 0.0f, 0.4f));
 	
@@ -434,13 +443,14 @@ void applicationLoop() {
 		shaderLighting.turnOn();
 		glUniform3fv(shaderLighting.getUniformLocation("viewPos"), 1, glm::value_ptr(camera->getPosition()));
 		//Directional light
+		/* Se envian los valores de las componentes difusas,a bmientales y especulares del shader de fragmento */
 		glUniform3f(shaderLighting.getUniformLocation("directionalLight.light.ambient"), 0.025, 0.025, 0.025);
 		glUniform3f(shaderLighting.getUniformLocation("directionalLight.light.diffuse"), 0.1, 0.1, 0.1);
 		glUniform3f(shaderLighting.getUniformLocation("directionalLight.light.specular"), 0.15, 0.15, 0.15);
 		glUniform3fv(shaderLighting.getUniformLocation("directionalLight.direction"), 1, glm::value_ptr(glm::vec3(0, -1.0, 0.0)));
 		//Numero de luces spot y point
 		int locCount = shaderLighting.getUniformLocation("pointLightCount");
-		glUniform1i(shaderLighting.getUniformLocation("pointLightCount"), 1);
+		glUniform1i(shaderLighting.getUniformLocation("pointLightCount"), 1); /* El ultimo parámetro indica el numero de luces*/
 		glUniform1i(shaderLighting.getUniformLocation("spotLightCount"), 1);
 		// Point light
 		glUniform3fv(shaderLighting.getUniformLocation("pointLights[0].position"), 1, glm::value_ptr(glm::vec3(lightModelmatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f))));
@@ -463,12 +473,27 @@ void applicationLoop() {
 		glUniform3f(shaderLighting.getUniformLocation("spotLights[0].light.specular"), 0.1, 0.7, 0.8);
 		shaderLighting.turnOff();
 
+		/* Se crea el shader con multiples luces */
 		modelRock.setShader(&shaderLighting);
 		modelRock.setProjectionMatrix(projection);
 		modelRock.setViewMatrix(view);
 		modelRock.setPosition(glm::vec3(5.0, 3.0, -20.0));
 		modelRock.setScale(glm::vec3(1.0, 1.0, 1.0));
 		modelRock.render();
+	/*
+		kangu.setShader(&shaderLighting);
+		kangu.setProjectionMatrix(projection);
+		kangu.setViewMatrix(view);
+		kangu.setPosition(glm::vec3(10.0, 3.0, -20.0));
+		kangu.setScale(glm::vec3(0.01, 0.01, 0.01));
+		kangu.render(); */
+
+		BB8.setShader(&shaderLighting);
+		BB8.setProjectionMatrix(projection);
+		BB8.setViewMatrix(view);
+		BB8.setPosition(glm::vec3(15.0, 3.0, -20.0));
+		BB8.setScale(glm::vec3(0.01, 0.01, 0.01));
+		BB8.render();
 
 		modelRail.setShader(&shaderLighting);
 		modelRail.setProjectionMatrix(projection);
@@ -481,6 +506,7 @@ void applicationLoop() {
 		modelAirCraft.setProjectionMatrix(projection);
 		modelAirCraft.setViewMatrix(view);
 		modelAirCraft.setScale(glm::vec3(1.0, 1.0, 1.0));
+		/* Movimientos del modelo. Desplazamiento en eje Z */
 		glm::mat4 matrixAirCraft = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, aircraftZ));
 		matrixAirCraft = glm::translate(matrixAirCraft, glm::vec3(10.0, 2.0, 15.0));
 		matrixAirCraft = glm::rotate(matrixAirCraft, rotationAirCraft, glm::vec3(0, 1, 0));
@@ -511,7 +537,8 @@ void applicationLoop() {
 		boxWater.setViewMatrix(view);
 		boxWater.setPosition(glm::vec3(3.0, 2.0, -5.0));
 		boxWater.setScale(glm::vec3(10.0, 0.001, 10.0));
-		boxWater.offsetUVS(glm::vec2(0.0001, 0.0001));
+		/* Se realiza el offset de la textura */
+		boxWater.offsetUVS(glm::vec2(0.0001, 0.0001)); /* Valor más grande, hace un movimiento más rapido. Se mueve en eje X y Y*/
 		boxWater.render();
 
 		if (angle > 2 * M_PI)
@@ -547,6 +574,7 @@ void applicationLoop() {
 		glDepthFunc(oldDepthFuncMode);
 		shaderCubeTexture.turnOff();
 
+		/* Incrementos */
 		if (finishRotation) {
 			if (direcionAirCraft)
 				aircraftZ -= 0.01;
@@ -577,7 +605,6 @@ void applicationLoop() {
 				}
 			}
 		}
-
 		glfwSwapBuffers(window);
 	}
 }
