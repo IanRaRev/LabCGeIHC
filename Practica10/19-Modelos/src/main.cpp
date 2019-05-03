@@ -55,7 +55,7 @@ Model modelAirCraft;
 Model arturito;
 Model modelTrain;
 Model kangu;
-Model BB8;
+Model car;
 
 GLuint textureID1, textureID2, textureID3, textureCespedID, textureWaterID, textureCubeTexture;
 GLuint cubeTextureID;
@@ -172,9 +172,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelRail.loadModel("../../models/railroad/railroad_track.obj");
 	modelAirCraft.loadModel("../../models/Aircraft_obj/E 45 Aircraft_obj.obj");
 	kangu.loadModel("../../models/kangu/12271_Kangaroo_v1_L3.obj");
-	BB8.loadModel("../../models/BB8 New/bb8.obj");
+	car.loadModel("../../models/Dodge/CHALLENGER71.obj");
 
-	camera->setPosition(glm::vec3(0.0f, 0.0f, 0.4f));
+
+	camera->setPosition(glm::vec3(0.0f, 0.0f, -2.0f));
 	
 	// Textura Ladrillos
 	int imageWidth, imageHeight;
@@ -385,9 +386,16 @@ void applicationLoop() {
 	float ratio = 20.0;
 
 	float aircraftZ = 0.0;
-	bool direcionAirCraft = true;
+	float aircraftX = 0.0;
+	bool directionAirCraft = true;
+	bool directionAirCraft1 = false;
+	bool directionAirCraft2 = false;
+	bool directionAirCraft3 = false;
 	float rotationAirCraft = 0.0;
-	bool finishRotation = true;
+	int finishRotation = 1;
+	bool finishRotation1 = false;
+	bool finishRotation2 = false;
+	bool finishRotation3 = false;
 
 	while (psi) {
 		psi = processInput(true);
@@ -416,13 +424,13 @@ void applicationLoop() {
 		cylinder.render(cylinder.getSlices() * cylinder.getStacks() * 2 * 3 + cylinder.getSlices() * 3, cylinder.getSlices() * 3);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		shaderTexture.turnOff();
-		
+
 		cylinder.setShader(&shaderMateriales);
 		cylinder.setProjectionMatrix(projection);
 		cylinder.setViewMatrix(view);
 		cylinder.setPosition(glm::vec3(0.0, 0.0, 0.0));
 		cylinder.setScale(glm::vec3(1.0, 1.0, 1.0));
-		
+
 		// Iluminación
 		glm::mat4 lightModelmatrix = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(1.0f, 0.0f, 0.0f));
 		lightModelmatrix = glm::translate(lightModelmatrix, glm::vec3(0.0f, 0.0f, -ratio));
@@ -480,20 +488,22 @@ void applicationLoop() {
 		modelRock.setPosition(glm::vec3(5.0, 3.0, -20.0));
 		modelRock.setScale(glm::vec3(1.0, 1.0, 1.0));
 		modelRock.render();
-	/*
+
+		/* Modelo canguro */
 		kangu.setShader(&shaderLighting);
 		kangu.setProjectionMatrix(projection);
 		kangu.setViewMatrix(view);
 		kangu.setPosition(glm::vec3(10.0, 3.0, -20.0));
 		kangu.setScale(glm::vec3(0.01, 0.01, 0.01));
-		kangu.render(); */
+		kangu.render();
 
-		BB8.setShader(&shaderLighting);
-		BB8.setProjectionMatrix(projection);
-		BB8.setViewMatrix(view);
-		BB8.setPosition(glm::vec3(15.0, 3.0, -20.0));
-		BB8.setScale(glm::vec3(0.01, 0.01, 0.01));
-		BB8.render();
+		/* Modelo auto */
+		car.setShader(&shaderLighting);
+		car.setProjectionMatrix(projection);
+		car.setViewMatrix(view);
+		car.setPosition(glm::vec3(3.0, 2.0, -5.0));
+		car.setScale(glm::vec3(1.0, 1.0, 1.0));
+		car.render();
 
 		modelRail.setShader(&shaderLighting);
 		modelRail.setProjectionMatrix(projection);
@@ -507,7 +517,7 @@ void applicationLoop() {
 		modelAirCraft.setViewMatrix(view);
 		modelAirCraft.setScale(glm::vec3(1.0, 1.0, 1.0));
 		/* Movimientos del modelo. Desplazamiento en eje Z */
-		glm::mat4 matrixAirCraft = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, aircraftZ));
+		glm::mat4 matrixAirCraft = glm::translate(glm::mat4(1.0f), glm::vec3(aircraftX, 0.0, aircraftZ));
 		matrixAirCraft = glm::translate(matrixAirCraft, glm::vec3(10.0, 2.0, 15.0));
 		matrixAirCraft = glm::rotate(matrixAirCraft, rotationAirCraft, glm::vec3(0, 1, 0));
 		modelAirCraft.render(matrixAirCraft);
@@ -574,37 +584,157 @@ void applicationLoop() {
 		glDepthFunc(oldDepthFuncMode);
 		shaderCubeTexture.turnOff();
 
-		/* Incrementos */
-		if (finishRotation) {
-			if (direcionAirCraft)
-				aircraftZ -= 0.01;
+
+		
+
+		/* Adelante */
+		if (finishRotation == 1)
+		{
+			aircraftZ -= 0.5;
+			if (finishRotation == 1 && aircraftZ < -35.0)
+			{
+				aircraftZ = -35.0;
+				finishRotation = 2;
+			}
+
+		} /* :)*/
+		
+		else if (finishRotation == 2)
+		{
+			aircraftX -= 0.5;
+			if (finishRotation == 2 && aircraftX < -35.0)
+			{
+				aircraftX = -35.0;
+				finishRotation = 3;
+			}
 			else
-				aircraftZ += 0.01;
-			if (direcionAirCraft && aircraftZ < -6.0) {
-				direcionAirCraft = false;
+			{
+				rotationAirCraft += 0.2;
+				if (rotationAirCraft > glm::radians(90.0f))
+				{
+					rotationAirCraft = glm::radians(90.0f);
+				}
+			}
+		}
+
+		/**/
+		else if (finishRotation ==  3)
+		{
+			aircraftZ += 0.5;
+			if (finishRotation == 3 && aircraftZ > 0.0)
+			{
+				aircraftZ = 0.0;
+				finishRotation = 4;
+			}
+			else
+			{
+				rotationAirCraft += 0.2;
+				if (rotationAirCraft > glm::radians(180.0f))
+				{
+					rotationAirCraft = glm::radians(180.0f);
+				}
+			}
+		}
+		
+		else if (finishRotation == 4)
+		{
+			aircraftX += 0.5;
+			if (finishRotation == 4 && aircraftX > 0.0)
+			{
+				aircraftX = 0.0;
+				finishRotation = 1;
+			}
+			else
+			{
+				rotationAirCraft += 0.2;
+				if (rotationAirCraft > glm::radians(270.0f))
+				{
+					rotationAirCraft = glm::radians(270.0f);
+				}
+			}
+		}
+
+		rotationAirCraft += 0.2;
+		if (rotationAirCraft > glm::radians(360.0f))
+		{
+			rotationAirCraft = glm::radians(360.0f);
+		}
+
+
+		/* Gira 
+		else
+		{
+			rotationAirCraft += 0.2;
+			if (!directionAirCraft)
+			{
+				if (rotationAirCraft > glm::radians(90.0f))
+				{
+					finishRotation1 = true;
+					directionAirCraft1 = true;
+					rotationAirCraft = glm::radians(90.0f);
+				}
+			}
+
+		} /* :) */
+		 
+		/* Izquierda 
+		if (finishRotation1)
+		{
+			if (directionAirCraft1)
+				aircraftX -= 1.0;
+
+			if (directionAirCraft1 && aircraftX < -35.0)
+			{
+				directionAirCraft1 = false;
+				finishRotation1 = false;
+				aircraftX = -35.0;
+			}
+		}
+
+
+
+		/* Incrementos 
+		if (finishRotation)
+		{
+			if (directionAirCraft) aircraftZ -= 0.2;
+
+			else aircraftZ += 0.2;
+
+			if (directionAirCraft && aircraftZ < -6.0)
+			{
+				directionAirCraft = false;
 				finishRotation = false;
 				aircraftZ = -6.0;
-			}if (!direcionAirCraft && aircraftZ > 6.0) {
-				direcionAirCraft = true;
+			}
+			if (!directionAirCraft && aircraftZ > 6.0)
+			{
+				directionAirCraft = true;
 				finishRotation = false;
 				aircraftZ = 6.0;
 			}
 		}
-		else {
-			rotationAirCraft += 0.01;
-			if (!direcionAirCraft) {
-				if (rotationAirCraft > glm::radians(180.0f)) {
+		else
+		{
+			rotationAirCraft += 0.2;
+			if (!directionAirCraft)
+			{
+				if (rotationAirCraft > glm::radians(180.0f))
+				{
 					finishRotation = true;
 					rotationAirCraft = glm::radians(180.0f);
 				}
 			}
-			else {
-				if (rotationAirCraft > glm::radians(360.0f)) {
+			else
+			{
+				if (rotationAirCraft > glm::radians(360.0f))
+				{
 					finishRotation = true;
 					rotationAirCraft = glm::radians(0.0f);
 				}
 			}
-		}
+		} 
+
+		*/
 		glfwSwapBuffers(window);
 	}
 }
