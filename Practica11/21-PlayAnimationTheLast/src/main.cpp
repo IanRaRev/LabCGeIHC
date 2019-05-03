@@ -59,7 +59,7 @@ Model modelTrain;
 
 GLuint textureID1, textureID2, textureID3, textureCespedID, textureWaterID, textureCubeTexture, textureMetalID;
 GLuint cubeTextureID;
-
+/* Interpola un frame con el siguiente*/
 std::vector<std::vector<glm::mat4>> getKeyFrames(std::string fileName) {
 	std::vector<std::vector<glm::mat4>> keyFrames;
 	std::string line;
@@ -473,10 +473,13 @@ void applicationLoop() {
 	float rotationAirCraft = 0.0;
 	bool finishRotation = true;
 
+	/* Se obtienen los frames del brazo. Están todo los conjuntos de transformaciones*/
 	std::vector<std::vector<glm::mat4>> keyFramesBrazo = getKeyFrames("../../animaciones/animationMano.txt");
-	int numPasosAnimBrazo = 200;
+	/* Numero de pasos para alcanzar el frame i - 1 al frame i */
+	int numPasosAnimBrazo = 50;
 	int numPasosAnimBrazoCurr = 0;
 
+	/* Indices del arreglo keyFrame del brazo*/
 	int indexKeyFrameBrazoCurr = 0;
 	int indexKeyFrameBrazoNext = 1;
 	float interpolation = 0.0;
@@ -537,6 +540,7 @@ void applicationLoop() {
 		cylinder.render();
 		shaderMateriales.turnOff();
 
+		/* Multiples luces */
 		shaderLighting.turnOn();
 		glUniform3fv(shaderLighting.getUniformLocation("viewPos"), 1, glm::value_ptr(camera->getPosition()));
 		//Directional light
@@ -568,6 +572,7 @@ void applicationLoop() {
 		glUniform3f(shaderLighting.getUniformLocation("spotLights[0].light.diffuse"), 0.7, 0.2, 0.6);
 		glUniform3f(shaderLighting.getUniformLocation("spotLights[0].light.specular"), 0.1, 0.7, 0.8);
 		shaderLighting.turnOff();
+		/* Multiples luces */
 
 		modelRock.setShader(&shaderLighting);
 		modelRock.setProjectionMatrix(projection);
@@ -602,15 +607,24 @@ void applicationLoop() {
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureID3);
-		if (keyFramesBrazo[indexKeyFrameBrazoCurr].size() == 7 && keyFramesBrazo[indexKeyFrameBrazoNext].size() == 7) {
-
+		/* +1 */
+		if (keyFramesBrazo[indexKeyFrameBrazoCurr].size() == 7 && keyFramesBrazo[indexKeyFrameBrazoNext].size() == 7) 
+		{
+			/* Matriz de rotación actual */
 			firstQuat = glm::quat_cast(keyFramesBrazo[indexKeyFrameBrazoCurr][0]);
 			secondQuat = glm::quat_cast(keyFramesBrazo[indexKeyFrameBrazoNext][0]);
+			/* Hace la interpolación del quaternion (matriz de rotación) */
 			finalQuat = glm::slerp(firstQuat, secondQuat, interpolation);
+			/* Se convierte al quaternion en una matriz de 4x4 */
 			interpoltaedMatrix = glm::mat4_cast(finalQuat);
+			/* Se obtiene la traslación del frame i-1 */
 			transformComp1 = keyFramesBrazo[indexKeyFrameBrazoCurr][0] * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+			/* Se obtiene la traslación del frame i */
 			transformComp2 = keyFramesBrazo[indexKeyFrameBrazoNext][0] * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+			/*Se realiza la interpolación entre el frame i-1 y el frame i*/
 			finalTrans = (float)(1.0 - interpolation) * transformComp1 + transformComp2 * interpolation;
+			/* Unimos la matriz de interpolacdión del quaternion y la interpolación de la traslación*/
 			interpoltaedMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(finalTrans)) * interpoltaedMatrix;
 
 			// Animacion KeyFrames
@@ -714,13 +728,17 @@ void applicationLoop() {
 		numPasosAnimBrazoCurr++;
 		interpolation = numPasosAnimBrazoCurr / (float)numPasosAnimBrazo;
 
-		if (interpolation >= 1.0) {
+		if (interpolation >= 1.0) 
+		{
+			interpolation = 0.0;
 			numPasosAnimBrazoCurr = 0;
 			indexKeyFrameBrazoCurr = indexKeyFrameBrazoNext;
 			indexKeyFrameBrazoNext++;
 		}
 
-		if (indexKeyFrameBrazoNext > keyFramesBrazo.size() - 1) {
+		if (indexKeyFrameBrazoNext > keyFramesBrazo.size() - 1) 
+		{
+			interpolation = 0.0;
 			indexKeyFrameBrazoCurr = 0;
 			indexKeyFrameBrazoNext = 1;
 		}

@@ -609,7 +609,7 @@ void applicationLoop() {
 			}
 			else
 			{
-				rotationAirCraft += 0.2;
+				rotationAirCraft += 0.1;
 				if (rotationAirCraft > glm::radians(90.0f))
 				{
 					rotationAirCraft = glm::radians(90.0f);
@@ -628,7 +628,7 @@ void applicationLoop() {
 			}
 			else
 			{
-				rotationAirCraft += 0.2;
+				rotationAirCraft += 0.1;
 				if (rotationAirCraft > glm::radians(180.0f))
 				{
 					rotationAirCraft = glm::radians(180.0f);
@@ -646,7 +646,7 @@ void applicationLoop() {
 			}
 			else
 			{
-				rotationAirCraft += 0.2;
+				rotationAirCraft += 0.1;
 				if (rotationAirCraft > glm::radians(270.0f))
 				{
 					rotationAirCraft = glm::radians(270.0f);
@@ -654,7 +654,7 @@ void applicationLoop() {
 			}
 		}
 
-		rotationAirCraft += 0.2;
+		rotationAirCraft += 0.1;
 		if (rotationAirCraft > glm::radians(360.0f))
 		{
 			rotationAirCraft = glm::radians(360.0f);
